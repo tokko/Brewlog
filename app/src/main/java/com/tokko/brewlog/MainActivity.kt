@@ -9,10 +9,6 @@ class MainActivity : AppCompatActivity() {
         showBrewListFragment()
     }
 
-
-    data class EventShowAddBrewFragment(val i: Int = 0)
-    data class EventBrewAdded(val i: Int = 0)
-
     override fun onSupportNavigateUp(): Boolean {
         showBrewListFragment()
         return true
