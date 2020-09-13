@@ -24,6 +24,7 @@ import java.util.*
 
 class BrewFormFragment : Fragment(), KodeinAware {
     val firestoreRepository: IFirestoreRepository by instance()
+    val scheduler: IScheduler by instance()
     lateinit var brew: Brew
     val dryHopAdapter = GroupAdapter<GroupieViewHolder>()
 
@@ -69,15 +70,17 @@ class BrewFormFragment : Fragment(), KodeinAware {
         validateDryHopButton()
 
         dryHopAddButton.setOnClickListener {
+            val dryHop = DryHopping(
+                DateTime(brew.brewDate).plusDays(
+                    dryHopAddDate.text.toString().toInt()
+                ).millis,
+                dryHopAddHopType.text.toString(),
+                dryHopAddAmount.text.toString().toInt()
+            )
+            brew.dryhops.add(dryHop)
             dryHopAdapter.add(
                 DryHopItem(
-                    DryHopping(
-                        DateTime(brew.brewDate).plusDays(
-                            dryHopAddDate.text.toString().toInt()
-                        ).millis,
-                        dryHopAddHopType.text.toString(),
-                        dryHopAddAmount.text.toString().toInt()
-                    )
+                    dryHop
                 )
             )
             dryHopAddAmount.text.clear()
@@ -89,8 +92,25 @@ class BrewFormFragment : Fragment(), KodeinAware {
             brew.apply {
                 name = brewName.text.toString()
             }
+            brew.dryhops.forEach {
+                scheduler.addAlarm(
+                    Alarm(
+                        it.date,
+                        "Dryhop time!",
+                        "Dryhop ${brew.name} with ${it.amount}g of ${it.type}"
+                    )
+                )
+            }
+            scheduler.addAlarm(
+                Alarm(
+                    brew.fermentationTime,
+                    "Bottling time!",
+                    "Bottle ${brew.name}"
+                )
+            )
             firestoreRepository.addBrew(brew)
             (activity as MainActivity).brewAdded()
+
         }
     }
 
@@ -119,7 +139,7 @@ class DryHopItem(val dryHopping: DryHopping) : Item() {
 }
 
 @Parcelize
-data class DryHopping(val date: Long, val type: String, val amount: Int) : Parcelable
+data class DryHopping(var date: Long = 0, var type: String = "", var amount: Int = 0) : Parcelable
 
 @Parcelize
 class Brew(
@@ -127,6 +147,8 @@ class Brew(
     var brewDate: Long = DateTime.now().millis,
     var dryhops: MutableList<DryHopping> = mutableListOf(),
     var fermentationTime: Long = DateTime.now().plusDays(14).millis,
-    var drinkable: Long = DateTime.now().plusDays(28).millis,
-    var notes: String = ""
+    var drinkable: Long = Long.MAX_VALUE,
+    var isConditioned: Boolean = false,
+    var notes: String = "",
+    var id: String = UUID.randomUUID().toString()
 ) : Parcelable

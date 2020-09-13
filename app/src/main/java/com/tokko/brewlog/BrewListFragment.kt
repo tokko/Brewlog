@@ -1,5 +1,6 @@
 package com.tokko.brewlog
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -9,6 +10,7 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.brew_list_fragment.*
 import kotlinx.android.synthetic.main.mock_item.view.*
+import org.joda.time.DateTime
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
@@ -32,7 +34,7 @@ class BrewListFragment : Fragment(), KodeinAware {
         brewListRecycler.layoutManager = LinearLayoutManager(activity)
         firestoreRepository.getBrews {
             adapter.clear()
-            it.forEach { adapter.add(StringItem(it.name)) }
+            it.forEach { adapter.add(Brewitem(it)) }
             adapter.notifyDataSetChanged()
         }
 
@@ -49,9 +51,14 @@ class BrewListFragment : Fragment(), KodeinAware {
 }
 
 
-class StringItem(val name: String) : Item() {
+class Brewitem(val brew: Brew) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.mockText.text = name
+        viewHolder.itemView.mockText.text = brew.name
+        viewHolder.itemView.mockText.setTextColor(
+            if (DateTime(brew.fermentationTime).isBeforeNow && !brew.isConditioned) Color.RED
+            else if (DateTime(brew.drinkable).isBeforeNow) Color.GREEN
+            else Color.BLACK
+        )
     }
 
     override fun getLayout() = R.layout.mock_item
