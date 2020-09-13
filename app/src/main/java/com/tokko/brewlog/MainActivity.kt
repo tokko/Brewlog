@@ -2,24 +2,39 @@ package com.tokko.brewlog
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
-            .commit()
-        if (!EventBus.getDefault().isRegistered(this))
-            EventBus.getDefault().register(this)
+        showBrewListFragment()
     }
 
 
     data class EventShowAddBrewFragment(val i: Int = 0)
+    data class EventBrewAdded(val i: Int = 0)
 
-    @Subscribe
-    fun showAddBrewFragment(event: EventShowAddBrewFragment) {
+    override fun onSupportNavigateUp(): Boolean {
+        showBrewListFragment()
+        return true
+    }
+
+    fun showBrewListFragment() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
+            .commit()
+
+    }
+
+    fun showAddBrewFragment() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewFormFragment())
+            .commit()
+    }
+
+    fun brewAdded() {
+        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
             .commit()
     }
 }

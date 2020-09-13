@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -36,6 +37,7 @@ dependencies {
     implementation "com.xwray:groupie-kotlin-android-extensions:2.8.1"
     implementation 'org.kodein.di:kodein-di-generic-jvm:6.1.0'
     implementation 'org.kodein.di:kodein-di-framework-android-x:6.1.0'
+    implementation 'com.google.firebase:firebase-firestore:17.1.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

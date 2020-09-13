@@ -16,10 +16,14 @@ import kotlinx.android.parcel.Parcelize
 import kotlinx.android.synthetic.main.brew_form_fragment.*
 import kotlinx.android.synthetic.main.dry_hop_item.view.*
 import org.joda.time.DateTime
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.kodein
+import org.kodein.di.generic.instance
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BrewFormFragment : Fragment() {
+class BrewFormFragment : Fragment(), KodeinAware {
+    val firestoreRepository: IFirestoreRepository by instance()
     lateinit var brew: Brew
     val dryHopAdapter = GroupAdapter<GroupieViewHolder>()
 
@@ -36,6 +40,8 @@ class BrewFormFragment : Fragment() {
         dryHopRecycler.layoutManager = LinearLayoutManager(activity)
         brew = (savedInstanceState ?: arguments)?.getParcelable<Brew>("brew") ?: Brew()
         initViews()
+
+
     }
 
     fun initViews() {
@@ -46,6 +52,7 @@ class BrewFormFragment : Fragment() {
         val textWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 validateDryHopButton()
+                validateBrewButton()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -58,6 +65,7 @@ class BrewFormFragment : Fragment() {
         dryHopAddAmount.addTextChangedListener(textWatcher)
         dryHopAddDate.addTextChangedListener(textWatcher)
         dryHopAddHopType.addTextChangedListener(textWatcher)
+        brewName.addTextChangedListener(textWatcher)
         validateDryHopButton()
 
         dryHopAddButton.setOnClickListener {
@@ -77,12 +85,25 @@ class BrewFormFragment : Fragment() {
             dryHopAddHopType.text.clear()
             dryHopAdapter.notifyDataSetChanged()
         }
+        addBrewButton.setOnClickListener {
+            brew.apply {
+                name = brewName.text.toString()
+            }
+            firestoreRepository.addBrew(brew)
+            (activity as MainActivity).brewAdded()
+        }
+    }
+
+    fun validateBrewButton() {
+        addBrewButton.isEnabled = brewName.text.isNotBlank()
     }
 
     fun validateDryHopButton() {
         dryHopAddButton.isEnabled =
             dryHopAddDate.text.isNotBlank() && dryHopAddAmount.text.isNotEmpty() && dryHopAddHopType.text.isNotEmpty()
     }
+
+    override val kodein by kodein()
 }
 
 class DryHopItem(val dryHopping: DryHopping) : Item() {

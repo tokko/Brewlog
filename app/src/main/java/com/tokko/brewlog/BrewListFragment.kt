@@ -9,10 +9,13 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.brew_list_fragment.*
 import kotlinx.android.synthetic.main.mock_item.view.*
-import org.greenrobot.eventbus.EventBus
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.x.kodein
+import org.kodein.di.generic.instance
 
-class BrewListFragment : Fragment() {
+class BrewListFragment : Fragment(), KodeinAware {
     private val adapter = GroupAdapter<GroupieViewHolder>()
+    val firestoreRepository: IFirestoreRepository by instance()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,22 +30,28 @@ class BrewListFragment : Fragment() {
         setHasOptionsMenu(true)
         brewListRecycler.adapter = adapter
         brewListRecycler.layoutManager = LinearLayoutManager(activity)
-        (0..10).forEach { adapter.add(MockItem(it)) }
-        adapter.notifyDataSetChanged()
+        firestoreRepository.getBrews {
+            adapter.clear()
+            it.forEach { adapter.add(StringItem(it.name)) }
+            adapter.notifyDataSetChanged()
+        }
 
 
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        EventBus.getDefault().post(MainActivity.EventShowAddBrewFragment())
+        (activity as MainActivity).showAddBrewFragment()
         return true
     }
+
+    override val kodein by kodein()
+
 }
 
 
-class MockItem(val n: Int) : Item() {
+class StringItem(val name: String) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.mockText.text = "Text $n"
+        viewHolder.itemView.mockText.text = name
     }
 
     override fun getLayout() = R.layout.mock_item
