@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/brewName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true" />
+
+        <TextView
+            android:id="@+id/brewDateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/brewName"
+            android:text="Brew date: " />
+
+        <TextView
+            android:id="@+id/brewDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/brewName"
+            android:layout_toEndOf="@id/brewDateLabel"
+            android:text="brew date placeholder" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/brewDate"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/fermentationEndDateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/brewDate"
+            android:layout_alignParentStart="true"
+            android:text="Fermentation end date: " />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/fermentationEndDateLabel"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/fermentationEndDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/brewDate"
+            android:layout_toEndOf="@id/fermentationEndDateLabel"
+            android:text="condition date placeholder" />
+
+        <TextView
+            android:id="@+id/dryHopLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fermentationEndDateLabel"
+            android:layout_alignParentStart="true"
+            android:text="Dry hops:" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/dryHopRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dryHopLabel"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dryHopRecycler"
+            android:layout_alignParentStart="true"
+            android:text="Bottled" />
+
+        <CheckBox
+            android:id="@+id/bottledCheckbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dryHopRecycler"
+            android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/drinkableLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bottledCheckbox"
+            android:layout_alignParentStart="true"
+            android:text="Drinkable: "
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/drinkableDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bottledCheckbox"
+            android:layout_toEndOf="@id/drinkableLabel"
+            android:visibility="gone" />
+    </RelativeLayout>
+</androidx.core.widget.NestedScrollView>

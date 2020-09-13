@@ -33,9 +33,11 @@ class BrewListFragment : Fragment(), KodeinAware {
         brewListRecycler.adapter = adapter
         brewListRecycler.layoutManager = LinearLayoutManager(activity)
         firestoreRepository.getBrews {
-            adapter.clear()
-            it.forEach { adapter.add(Brewitem(it)) }
-            adapter.notifyDataSetChanged()
+            if (activity != null) {
+                adapter.clear()
+                it.forEach { adapter.add(Brewitem(it, activity as MainActivity)) }
+                adapter.notifyDataSetChanged()
+            }
         }
 
 
@@ -51,14 +53,18 @@ class BrewListFragment : Fragment(), KodeinAware {
 }
 
 
-class Brewitem(val brew: Brew) : Item() {
+class Brewitem(val brew: Brew, val activity: MainActivity) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.mockText.text = brew.name
         viewHolder.itemView.mockText.setTextColor(
-            if (DateTime(brew.fermentationTime).isBeforeNow && !brew.isConditioned) Color.RED
+            if (DateTime(brew.fermentationTime).isBeforeNow && !brew.isBottled || brew.dryhops.any { !it.checked && DateTime.now().isBeforeNow }) Color.RED
             else if (DateTime(brew.drinkable).isBeforeNow) Color.GREEN
             else Color.BLACK
         )
+        viewHolder.itemView.setOnClickListener {
+            activity.showBrewFragment(brew.id)
+        }
+
     }
 
     override fun getLayout() = R.layout.mock_item

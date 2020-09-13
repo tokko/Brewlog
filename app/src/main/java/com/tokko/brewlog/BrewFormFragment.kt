@@ -23,8 +23,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class BrewFormFragment : Fragment(), KodeinAware {
+    override val kodein by kodein()
     val firestoreRepository: IFirestoreRepository by instance()
-    val scheduler: IScheduler by instance()
+    val brewService: IBrewService by instance()
     lateinit var brew: Brew
     val dryHopAdapter = GroupAdapter<GroupieViewHolder>()
 
@@ -92,23 +93,7 @@ class BrewFormFragment : Fragment(), KodeinAware {
             brew.apply {
                 name = brewName.text.toString()
             }
-            brew.dryhops.forEach {
-                scheduler.addAlarm(
-                    Alarm(
-                        it.date,
-                        "Dryhop time!",
-                        "Dryhop ${brew.name} with ${it.amount}g of ${it.type}"
-                    )
-                )
-            }
-            scheduler.addAlarm(
-                Alarm(
-                    brew.fermentationTime,
-                    "Bottling time!",
-                    "Bottle ${brew.name}"
-                )
-            )
-            firestoreRepository.addBrew(brew)
+            brewService.createBrew(brew)
             (activity as MainActivity).brewAdded()
 
         }
@@ -123,7 +108,6 @@ class BrewFormFragment : Fragment(), KodeinAware {
             dryHopAddDate.text.isNotBlank() && dryHopAddAmount.text.isNotEmpty() && dryHopAddHopType.text.isNotEmpty()
     }
 
-    override val kodein by kodein()
 }
 
 class DryHopItem(val dryHopping: DryHopping) : Item() {
@@ -139,7 +123,13 @@ class DryHopItem(val dryHopping: DryHopping) : Item() {
 }
 
 @Parcelize
-data class DryHopping(var date: Long = 0, var type: String = "", var amount: Int = 0) : Parcelable
+data class DryHopping(
+    var date: Long = 0,
+    var type: String = "",
+    var amount: Int = 0,
+    var checked: Boolean = false,
+    var alarmId: String = ""
+) : Parcelable
 
 @Parcelize
 class Brew(
@@ -148,7 +138,9 @@ class Brew(
     var dryhops: MutableList<DryHopping> = mutableListOf(),
     var fermentationTime: Long = DateTime.now().plusDays(14).millis,
     var drinkable: Long = Long.MAX_VALUE,
-    var isConditioned: Boolean = false,
+    var drinkableAlarmId: String = "",
+    var isBottled: Boolean = false,
+    var bottledAlarmId: String = "",
     var notes: String = "",
     var id: String = UUID.randomUUID().toString()
 ) : Parcelable
