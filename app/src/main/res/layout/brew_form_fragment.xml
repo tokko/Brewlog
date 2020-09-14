@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:padding="12dp"
     android:layout_height="match_parent">
 
     <RelativeLayout
@@ -9,6 +10,8 @@
 
         <EditText
             android:id="@+id/brewName"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -16,6 +19,9 @@
 
         <TextView
             android:id="@+id/brewDateLabel"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/brewName"
@@ -24,6 +30,9 @@
         <TextView
             android:id="@+id/brewDate"
             android:layout_width="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:textStyle="bold"
             android:layout_height="wrap_content"
             android:layout_below="@id/brewName"
             android:layout_toEndOf="@id/brewDateLabel"
@@ -38,8 +47,11 @@
         <TextView
             android:id="@+id/fermentationEndDateLabel"
             android:layout_width="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/brewDate"
+            android:textStyle="bold"
             android:layout_alignParentStart="true"
             android:text="Fermentation end date: " />
 
@@ -52,6 +64,8 @@
         <TextView
             android:id="@+id/fermentationEndDate"
             android:layout_width="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/brewDate"
             android:layout_toEndOf="@id/fermentationEndDateLabel"
@@ -59,6 +73,10 @@
 
         <TextView
             android:id="@+id/dryHopLabel"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:paddingTop="24dp"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/fermentationEndDateLabel"
@@ -104,8 +122,17 @@
             android:layout_below="@id/dryHopAddAmount"
             android:text="Add dry hop" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_below="@id/dryHopAddButton"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:background="@android:color/darker_gray" />
+
         <Button
             android:id="@+id/addBrewButton"
+            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/dryHopAddButton"
