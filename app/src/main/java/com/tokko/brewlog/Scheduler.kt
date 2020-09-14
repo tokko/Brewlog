@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import org.joda.time.DateTime
 import java.util.*
 
 interface IScheduler {
@@ -31,7 +32,11 @@ class Scheduler(
                 )
                 alarmManager.cancel(pendingIntent)
                 if (!it.checked)
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, it.dateTime, pendingIntent)
+                    alarmManager.set(
+                        AlarmManager.RTC_WAKEUP,
+                        DateTime(it.dateTime).withTimeAtStartOfDay().millis,
+                        pendingIntent
+                    )
                 else
                     firebaseRepository.deleteAlarm(it.id)
             }
