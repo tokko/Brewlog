@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "670509380462",
+    "firebase_url": "https://brewlog-8ae71.firebaseio.com",
+    "project_id": "brewlog-8ae71",
+    "storage_bucket": "brewlog-8ae71.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670509380462:android:b1580ef82066b1f680877f",
+        "android_client_info": {
+          "package_name": "com.tokko.brewlog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "670509380462-t8etrrumgphsa25ahsu1t1v48vdkrvt8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tokko.brewlog",
+            "certificate_hash": "976654d2208ff93555e2e217c7cf4586e2a84790"
+          }
+        },
+        {
+          "client_id": "670509380462-k4tru95pmo0mqvchebvmnsp5238f46n2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7N1q5jCYjcKLsFxfG42vNR40v616kQoo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "670509380462-k4tru95pmo0mqvchebvmnsp5238f46n2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
