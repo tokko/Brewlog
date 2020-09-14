@@ -41,11 +41,24 @@ class AlarmReciever : BroadcastReceiver() {
                             contentIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT
                         )
+                        val deleteIntent = Intent(context, DismissReceiver::class.java).apply {
+                            putExtra(
+                                "alarmId",
+                                alarm.id
+                            )
+                        }
+                        val deletePendingIntent = PendingIntent.getBroadcast(
+                            context,
+                            0,
+                            deleteIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                        )
                         val notification = Notification.Builder(context, "brews")
                             .setContentTitle(alarm.headline)
                             .setContentText(alarm.message)
                             .setAutoCancel(false)
                             .setContentIntent(contentPendingIntent)
+                            .setDeleteIntent(deletePendingIntent)
                             .build()
                         notificationManager.notify(Random().nextInt(), notification)
                     }

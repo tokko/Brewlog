@@ -4,6 +4,8 @@ import android.app.AlarmManager
 import android.app.Application
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import org.joda.time.DateTime
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
@@ -15,9 +17,15 @@ import org.kodein.di.generic.singleton
 class BrewLogApplication : Application(), KodeinAware {
     val scheduler: IScheduler by instance()
     val brewService: IBrewService by instance()
+    var bootreciever: Bootreciever? = null
+
     override fun onCreate() {
         super.onCreate()
         scheduler.schedule()
+        if (bootreciever != null) {
+            bootreciever = Bootreciever()
+            registerReceiver(bootreciever, IntentFilter(Intent.ACTION_BOOT_COMPLETED))
+        }
         //   bootStrap()
     }
 
