@@ -94,7 +94,7 @@ class BrewFormFragment : Fragment(), KodeinAware {
                 name = brewName.text.toString()
             }
             brewService.createBrew(brew)
-            (activity as MainActivity).brewAdded()
+            (activity as MainActivity).showBrewListFragment()
 
         }
     }
