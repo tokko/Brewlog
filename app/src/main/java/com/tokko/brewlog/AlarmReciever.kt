@@ -3,6 +3,7 @@ package com.tokko.brewlog
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -18,7 +19,7 @@ class AlarmReciever : BroadcastReceiver() {
                 val firestoreRepository: IFirestoreRepository = kodein.direct.instance()
                 val alarmId = intent.getStringExtra("alarmId")
                 alarmId?.let {
-                    firestoreRepository.getAlarm(it) {
+                    firestoreRepository.getAlarm(it) { alarm ->
 
                         val notificationManager: NotificationManager = kodein.direct.instance()
                         notificationManager.createNotificationChannel(
@@ -28,12 +29,23 @@ class AlarmReciever : BroadcastReceiver() {
                                 NotificationManager.IMPORTANCE_DEFAULT
                             )
                         )
-
+                        val contentIntent = Intent(context, MainActivity::class.java).apply {
+                            putExtra(
+                                "brewId",
+                                alarm.brewId
+                            )
+                        }
+                        val contentPendingIntent = PendingIntent.getActivity(
+                            context,
+                            0,
+                            contentIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT
+                        )
                         val notification = Notification.Builder(context, "brews")
-                            .setContentTitle(it.headline)
-                            .setContentText(it.message)
+                            .setContentTitle(alarm.headline)
+                            .setContentText(alarm.message)
                             .setAutoCancel(false)
-                            //.setContentIntent()
+                            .setContentIntent(contentPendingIntent)
                             .build()
                         notificationManager.notify(Random().nextInt(), notification)
                     }

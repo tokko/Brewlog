@@ -11,7 +11,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     val firestoreRepository: IFirestoreRepository by instance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        showBrewListFragment()
+        val brewId = intent.getStringExtra("brewId")
+        if (brewId != null)
+            showBrewFragment(brewId)
+        else
+            showBrewListFragment()
     }
 
     override fun onSupportNavigateUp(): Boolean {
