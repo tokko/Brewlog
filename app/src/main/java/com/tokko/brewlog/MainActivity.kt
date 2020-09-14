@@ -46,9 +46,4 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             .commit()
     }
 
-    fun brewAdded() {
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
-            .commit()
-    }
-
 }
