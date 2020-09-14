@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/addBrew"
-        android:icon="@android:drawable/btn_plus"
+        android:icon="@android:drawable/ic_menu_add"
         android:title="Add Brew"
         app:showAsAction="always" />
 </menu>

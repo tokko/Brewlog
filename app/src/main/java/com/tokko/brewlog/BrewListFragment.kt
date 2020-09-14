@@ -35,7 +35,8 @@ class BrewListFragment : Fragment(), KodeinAware {
         firestoreRepository.getBrews {
             if (activity != null) {
                 adapter.clear()
-                it.forEach { adapter.add(Brewitem(it, activity as MainActivity)) }
+                it.sortedByDescending { it.brewDate }
+                    .forEach { adapter.add(Brewitem(it, activity as MainActivity)) }
                 adapter.notifyDataSetChanged()
             }
         }
