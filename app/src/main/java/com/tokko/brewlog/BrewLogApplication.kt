@@ -31,7 +31,6 @@ class BrewLogApplication : Application(), KodeinAware {
 
     private fun bootStrap() {
         val dryHopAlarmId = "0ffaf6ed-243d-44e9-b800-ef262fd183ed"
-
         val brew = Brew(
             "Bavarian Mandarin",
             DateTime().withDate(2020, 9, 12).millis,
@@ -53,6 +52,19 @@ class BrewLogApplication : Application(), KodeinAware {
 
         )
         brewService.createBrew(brew)
+        val brew2 = Brew(
+            "Styrian Wolf",
+            DateTime().withDate(2020, 9, 1).millis,
+            mutableListOf(),
+            DateTime().withDate(2020, 9, 1).plusDays(14).millis,
+            Long.MAX_VALUE,
+            "",
+            false,
+            "",
+            "f61f057d-6585-42c6-9ead-2bb6ce788d9e"
+
+        )
+        brewService.createBrew(brew2)
     }
     override val kodein = Kodein.lazy {
         bind<IFirestoreRepository>() with singleton { FirestoreRepository() }

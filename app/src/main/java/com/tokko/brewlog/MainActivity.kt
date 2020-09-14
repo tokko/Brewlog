@@ -9,6 +9,7 @@ import org.kodein.di.generic.instance
 class MainActivity : AppCompatActivity(), KodeinAware {
     override val kodein by kodein(this)
     val firestoreRepository: IFirestoreRepository by instance()
+    var brewList = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val brewId = intent.getStringExtra("brewId")
@@ -23,9 +24,17 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         return true
     }
 
+    override fun onBackPressed() {
+        if (!brewList)
+            showBrewListFragment()
+        else
+            super.onBackPressed()
+    }
+
     fun showBrewFragment(id: String) {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        brewList = false
         supportFragmentManager.beginTransaction()
             .replace(android.R.id.content, BrewFragment.newInstance(id, firestoreRepository))
             .commit()
@@ -34,12 +43,14 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     fun showBrewListFragment() {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        brewList = true
         supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
             .commit()
 
     }
 
     fun showAddBrewFragment() {
+        brewList = false
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewFormFragment())
