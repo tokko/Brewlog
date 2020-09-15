@@ -42,6 +42,7 @@ class AlarmReciever : BroadcastReceiver() {
                             PendingIntent.FLAG_UPDATE_CURRENT
                         )
                         val deleteIntent = Intent(context, DismissReceiver::class.java).apply {
+                            action = alarmId
                             putExtra(
                                 "alarmId",
                                 alarm.id

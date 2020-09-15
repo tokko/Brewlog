@@ -29,6 +29,9 @@
         <receiver
             android:name=".AlarmReciever"
             android:exported="true" />
+        <receiver
+            android:name=".DismissReceiver"
+            android:exported="true" />
     </application>
 
 </manifest>
