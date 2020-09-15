@@ -51,7 +51,6 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
             }
         })
         adapter.notifyDataSetChanged()
-        bottledCheckbox.isChecked = brew.isBottled
         bottledCheckbox.setOnCheckedChangeListener { _, isChecked ->
             brew.isBottled = isChecked
             firestoreRepository.addBrew(brew)
@@ -66,6 +65,7 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
                 ).also { brew.drinkableAlarmId = it.id })
             firestoreRepository.addBrew(brew)
         }
+        bottledCheckbox.isChecked = brew.isBottled
         dryHopLabel.visibility = if (brew.dryhops.isNullOrEmpty()) GONE else VISIBLE
         updateDrinkableDate()
     }
