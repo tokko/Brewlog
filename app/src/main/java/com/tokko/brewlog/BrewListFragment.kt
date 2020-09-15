@@ -35,7 +35,7 @@ class BrewListFragment : Fragment(), KodeinAware {
         firestoreRepository.getBrews {
             if (activity != null) {
                 adapter.clear()
-                it.sortedByDescending { it.brewDate }
+                it.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate }
                     .forEach { adapter.add(Brewitem(it, activity as MainActivity)) }
                 adapter.notifyDataSetChanged()
             }
@@ -53,16 +53,18 @@ class BrewListFragment : Fragment(), KodeinAware {
 
 }
 
+fun Brew.hasAction() =
+    DateTime(this.fermentationTime).withTimeAtStartOfDay().isBeforeNow && !this.isBottled || this.dryhops.any {
+        !it.checked && DateTime(
+            it.date
+        ).withTimeAtStartOfDay().isBeforeNow
+    }
 
 class Brewitem(val brew: Brew, val activity: MainActivity) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.mockText.text = brew.name
         viewHolder.itemView.mockText.setTextColor(
-            if (DateTime(brew.fermentationTime).withTimeAtStartOfDay().isBeforeNow && !brew.isBottled || brew.dryhops.any {
-                    !it.checked && DateTime(
-                        it.date
-                    ).withTimeAtStartOfDay().isBeforeNow
-                }) Color.RED
+            if (brew.hasAction()) Color.RED
             else if (DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow) Color.GREEN
             else Color.BLACK
         )
