@@ -15,7 +15,7 @@ class AlarmReciever : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         context?.let { context ->
             intent?.let { intent ->
-                val kodein = (context as BrewLogApplication).kodein
+                val kodein = (context.applicationContext as BrewLogApplication).kodein
                 val firestoreRepository: IFirestoreRepository = kodein.direct.instance()
                 val alarmId = intent.getStringExtra("alarmId")
                 alarmId?.let {
@@ -56,6 +56,7 @@ class AlarmReciever : BroadcastReceiver() {
                         val notification = Notification.Builder(context, "brews")
                             .setContentTitle(alarm.headline)
                             .setContentText(alarm.message)
+                            .setSmallIcon(R.drawable.ic_launcher_foreground)
                             .setAutoCancel(false)
                             .setContentIntent(contentPendingIntent)
                             .setDeleteIntent(deletePendingIntent)

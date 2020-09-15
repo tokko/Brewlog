@@ -66,6 +66,7 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
                 ).also { brew.drinkableAlarmId = it.id })
             firestoreRepository.addBrew(brew)
         }
+        dryHopLabel.visibility = if (brew.dryhops.isNullOrEmpty()) GONE else VISIBLE
         updateDrinkableDate()
     }
 

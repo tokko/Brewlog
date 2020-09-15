@@ -13,7 +13,7 @@ class Bootreciever : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         context?.let {
-            kodein = (it as BrewLogApplication).kodein
+            kodein = (it.applicationContext as BrewLogApplication).kodein
             scheduler = kodein.direct.instance()
             scheduler.schedule()
         }

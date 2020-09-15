@@ -18,13 +18,22 @@ class BrewLogApplication : Application(), KodeinAware {
     val scheduler: IScheduler by instance()
     val brewService: IBrewService by instance()
     var bootreciever: Bootreciever? = null
-
+    var alarmReciever: AlarmReciever? = null
+    var dismissReceiver: DismissReceiver? = null
     override fun onCreate() {
         super.onCreate()
         scheduler.schedule()
-        if (bootreciever != null) {
+        if (bootreciever == null) {
             bootreciever = Bootreciever()
             registerReceiver(bootreciever, IntentFilter(Intent.ACTION_BOOT_COMPLETED))
+        }
+        if (alarmReciever == null) {
+            alarmReciever = AlarmReciever()
+            registerReceiver(alarmReciever, IntentFilter())
+        }
+        if (dismissReceiver == null) {
+            dismissReceiver = DismissReceiver()
+            registerReceiver(dismissReceiver, IntentFilter())
         }
         //   bootStrap()
     }

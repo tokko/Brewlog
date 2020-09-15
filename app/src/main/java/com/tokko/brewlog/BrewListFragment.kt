@@ -58,8 +58,12 @@ class Brewitem(val brew: Brew, val activity: MainActivity) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.mockText.text = brew.name
         viewHolder.itemView.mockText.setTextColor(
-            if (DateTime(brew.fermentationTime).isBeforeNow && !brew.isBottled || brew.dryhops.any { !it.checked && DateTime.now().isBeforeNow }) Color.RED
-            else if (DateTime(brew.drinkable).isBeforeNow) Color.GREEN
+            if (DateTime(brew.fermentationTime).withTimeAtStartOfDay().isBeforeNow && !brew.isBottled || brew.dryhops.any {
+                    !it.checked && DateTime(
+                        it.date
+                    ).withTimeAtStartOfDay().isBeforeNow
+                }) Color.RED
+            else if (DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow) Color.GREEN
             else Color.BLACK
         )
         viewHolder.itemView.setOnClickListener {
