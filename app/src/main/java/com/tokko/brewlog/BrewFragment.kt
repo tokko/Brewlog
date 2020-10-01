@@ -53,6 +53,7 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
         adapter.notifyDataSetChanged()
         bottledCheckbox.setOnCheckedChangeListener { _, isChecked ->
             brew.isBottled = isChecked
+            brew.bottledDate = DateTime.now().withTimeAtStartOfDay().millis
             firestoreRepository.addBrew(brew)
             updateDrinkableDate()
             bottledCheckbox.isEnabled = !isChecked
@@ -74,11 +75,17 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
         if (brew.isBottled) {
             drinkableLabel.visibility = VISIBLE
             drinkableDate.visibility = VISIBLE
+            bottledDateLabel.visibility = VISIBLE
+            bottledDate.visibility = VISIBLE
+            bottledDate.text =
+                SimpleDateFormat("yyyy-MM-dd").format(DateTime(brew.bottledDate).millis)
             drinkableDate.text =
-                SimpleDateFormat("yyyy-MM-dd").format(Date(DateTime.now().plusDays(14).millis))
+                SimpleDateFormat("yyyy-MM-dd").format(DateTime(brew.bottledDate).plusDays(14).millis)
         } else {
             drinkableLabel.visibility = GONE
             drinkableDate.visibility = GONE
+            bottledDateLabel.visibility = GONE
+            bottledDate.visibility = GONE
         }
     }
 

@@ -109,13 +109,35 @@
             android:layout_alignParentEnd="true" />
 
         <TextView
+            android:id="@+id/bottledDateLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@id/bottledCheckbox"
+            android:layout_alignParentStart="true"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:text="Bottled: "
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/bottledDate"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_below="@id/bottledCheckbox"
+            android:layout_toEndOf="@id/bottledDateLabel"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/drinkableLabel"
             android:layout_width="wrap_content"
             android:paddingTop="6dp"
             android:layout_height="wrap_content"
             android:paddingBottom="6dp"
             android:textStyle="bold"
-            android:layout_below="@id/bottledCheckbox"
+            android:layout_below="@id/bottledDateLabel"
             android:layout_alignParentStart="true"
             android:text="Drinkable: "
             android:visibility="gone" />
@@ -126,7 +148,7 @@
             android:paddingBottom="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/bottledCheckbox"
+            android:layout_below="@id/bottledDateLabel"
             android:layout_toEndOf="@id/drinkableLabel"
             android:visibility="gone" />
     </RelativeLayout>

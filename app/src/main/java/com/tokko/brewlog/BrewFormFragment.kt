@@ -141,6 +141,7 @@ class Brew(
     var drinkableAlarmId: String = "",
     var isBottled: Boolean = false,
     var bottledAlarmId: String = "",
+    var bottledDate: Long? = null,
     var notes: String = "",
     var id: String = UUID.randomUUID().toString()
 ) : Parcelable

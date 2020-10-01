@@ -57,6 +57,7 @@ class BrewLogApplication : Application(), KodeinAware {
             "",
             false,
             "",
+            null,
             "41f214e8-0e0d-4f18-bfc0-e9e0bdaba331"
 
         )
@@ -70,6 +71,7 @@ class BrewLogApplication : Application(), KodeinAware {
             "",
             false,
             "",
+            null,
             "f61f057d-6585-42c6-9ead-2bb6ce788d9e"
 
         )
