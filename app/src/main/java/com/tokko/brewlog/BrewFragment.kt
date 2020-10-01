@@ -51,6 +51,8 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
             }
         })
         adapter.notifyDataSetChanged()
+        bottledCheckbox.isChecked = brew.isBottled
+        bottledCheckbox.isEnabled = !brew.isBottled
         bottledCheckbox.setOnCheckedChangeListener { _, isChecked ->
             brew.isBottled = isChecked
             brew.bottledDate = DateTime.now().withTimeAtStartOfDay().millis
@@ -66,7 +68,6 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
                 ).also { brew.drinkableAlarmId = it.id })
             firestoreRepository.addBrew(brew)
         }
-        bottledCheckbox.isChecked = brew.isBottled
         dryHopLabel.visibility = if (brew.dryhops.isNullOrEmpty()) GONE else VISIBLE
         updateDrinkableDate()
     }
@@ -103,11 +104,13 @@ class DryHoppedItem(val dryHopping: DryHopping, val saveCallback: () -> Unit) : 
         viewHolder.itemView.dryHopDate.text =
             SimpleDateFormat("yyyy-MM-dd").format(Date(dryHopping.date))
         viewHolder.itemView.dryHopType.text = "Hop: ${dryHopping.type}"
+        viewHolder.itemView.isDryhoppedCheckBox.isChecked = dryHopping.checked
+        viewHolder.itemView.isDryhoppedCheckBox.isEnabled = !dryHopping.checked
+
         viewHolder.itemView.isDryhoppedCheckBox.setOnCheckedChangeListener { _, isChecked ->
             dryHopping.checked = isChecked
             saveCallback()
         }
-        viewHolder.itemView.isDryhoppedCheckBox.isChecked = dryHopping.checked
     }
 
     override fun getLayout() = R.layout.dry_hopped_item
