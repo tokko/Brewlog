@@ -51,4 +51,6 @@ data class Alarm(
     var message: String = "",
     var id: String = UUID.randomUUID().toString(),
     var checked: Boolean = false
-)
+) {
+    fun validate() = headline.isNotBlank() || message.isNotBlank()
+}

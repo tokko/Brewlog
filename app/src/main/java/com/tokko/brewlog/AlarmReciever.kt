@@ -20,7 +20,7 @@ class AlarmReciever : BroadcastReceiver() {
                 val alarmId = intent.getStringExtra("alarmId")
                 alarmId?.let {
                     firestoreRepository.getAlarm(it) { alarm ->
-
+                        if (!alarm.validate()) return@getAlarm
                         val notificationManager: NotificationManager = kodein.direct.instance()
                         notificationManager.createNotificationChannel(
                             NotificationChannel(
