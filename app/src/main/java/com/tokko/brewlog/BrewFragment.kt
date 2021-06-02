@@ -59,6 +59,7 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
             firestoreRepository.addBrew(brew)
             updateDrinkableDate()
             bottledCheckbox.isEnabled = !isChecked
+            brew.drinkable = DateTime.now().plusDays(14).millis
             firestoreRepository.addAlarm(
                 Alarm(
                     brew.id,

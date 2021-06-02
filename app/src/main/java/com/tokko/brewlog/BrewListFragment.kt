@@ -63,6 +63,7 @@ fun Brew.hasAction() =
 class Brewitem(val brew: Brew, val activity: MainActivity) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.itemView.mockText.text = brew.name
+        val d = DateTime(brew.drinkable).withTimeAtStartOfDay()
         viewHolder.itemView.mockText.setTextColor(
             if (brew.hasAction()) Color.RED
             else if (DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow) Color.GREEN
