@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tokko.brewlog.databinding.BrewItemBinding
+import com.tokko.brewlog.databinding.BrewListFragmentBinding
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.brew_list_fragment.*
-import kotlinx.android.synthetic.main.mock_item.view.*
+import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.viewbinding.BindableItem
 import org.joda.time.DateTime
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
@@ -18,11 +18,18 @@ import org.kodein.di.generic.instance
 class BrewListFragment : Fragment(), KodeinAware {
     private val adapter = GroupAdapter<GroupieViewHolder>()
     val firestoreRepository: IFirestoreRepository by instance()
+
+    private var _binding: BrewListFragmentBinding? = null
+    val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.brew_list_fragment, container, false)
+    ): View {
+        _binding = BrewListFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
         inflater.inflate(R.menu.brew_list_menu, menu)
@@ -30,8 +37,8 @@ class BrewListFragment : Fragment(), KodeinAware {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        brewListRecycler.adapter = adapter
-        brewListRecycler.layoutManager = LinearLayoutManager(activity)
+        binding.brewListRecycler.adapter = adapter
+        binding.brewListRecycler.layoutManager = LinearLayoutManager(activity)
         firestoreRepository.getBrews {
             if (activity != null) {
                 adapter.clear()
@@ -60,21 +67,23 @@ fun Brew.hasAction() =
         ).withTimeAtStartOfDay().isBeforeNow
     }
 
-class Brewitem(val brew: Brew, val activity: MainActivity) : Item() {
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.mockText.text = brew.name
-        val d = DateTime(brew.drinkable).withTimeAtStartOfDay()
-        viewHolder.itemView.mockText.setTextColor(
-            if (brew.hasAction()) Color.RED
-            else if (DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow) Color.GREEN
-            else Color.BLACK
+class Brewitem(val brew: Brew, val activity: MainActivity) : BindableItem<BrewItemBinding>() {
+    override fun getLayout() = R.layout.brew_item
+    override fun bind(viewBinding: BrewItemBinding, position: Int) {
+        viewBinding.mockText.text = brew.name
+        viewBinding.mockText.setTextColor(
+            when {
+                brew.hasAction() -> Color.RED
+                DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow -> Color.GREEN
+                else -> Color.BLACK
+            }
         )
-        viewHolder.itemView.setOnClickListener {
+        viewBinding.root.setOnClickListener {
             activity.showBrewFragment(brew.id)
         }
 
     }
 
-    override fun getLayout() = R.layout.mock_item
+    override fun initializeViewBinding(view: View) = BrewItemBinding.bind(view)
 
 }

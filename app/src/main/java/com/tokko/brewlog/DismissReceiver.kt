@@ -12,7 +12,7 @@ class DismissReceiver : BroadcastReceiver() {
             intent?.let { intent ->
                 val kodein = (context.applicationContext as BrewLogApplication).kodein
                 val firestoreRepository: IFirestoreRepository = kodein.direct.instance()
-                val alarmId = intent.getStringExtra("alarmId")
+                val alarmId = intent.getStringExtra("alarmId") ?: ""
                 firestoreRepository.getAlarm(alarmId) {
                     it.checked = true
                     firestoreRepository.addAlarm(it)

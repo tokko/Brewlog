@@ -8,14 +8,11 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.tokko.brewlog.databinding.BrewFragmentBinding
+import com.tokko.brewlog.databinding.DryHoppedItemBinding
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import com.xwray.groupie.kotlinandroidextensions.Item
-import kotlinx.android.synthetic.main.brew_fragment.*
-import kotlinx.android.synthetic.main.dry_hop_item.view.dryHopDate
-import kotlinx.android.synthetic.main.dry_hop_item.view.dryHopType
-import kotlinx.android.synthetic.main.dry_hop_item.view.dryhopAmount
-import kotlinx.android.synthetic.main.dry_hopped_item.view.*
+import com.xwray.groupie.GroupieViewHolder
+import com.xwray.groupie.viewbinding.BindableItem
 import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,11 +20,19 @@ import java.util.*
 class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
     lateinit var brew: Brew
     val adapter = GroupAdapter<GroupieViewHolder>()
+    private var _binding: BrewFragmentBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.brew_fragment, null)
+    ): View {
+        _binding = BrewFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    //= inflater.inflate(R.layout.brew_fragment, null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,26 +44,26 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
     }
 
     private fun initViews() {
-        brewName.text = brew.name
-        brewDate.text = SimpleDateFormat("yyyy-MM-dd").format(Date(brew.brewDate))
-        fermentationEndDate.text =
+        binding.brewName.text = brew.name
+        binding.brewDate.text = SimpleDateFormat("yyyy-MM-dd").format(Date(brew.brewDate))
+        binding.fermentationEndDate.text =
             SimpleDateFormat("yyyy-MM-dd").format(Date(brew.fermentationTime))
-        dryHopRecycler.adapter = adapter
-        dryHopRecycler.layoutManager = LinearLayoutManager(activity)
+        binding.dryHopRecycler.adapter = adapter
+        binding.dryHopRecycler.layoutManager = LinearLayoutManager(activity)
         adapter.addAll(brew.dryhops.map {
             DryHoppedItem(it) {
                 firestoreRepository.addBrew(brew)
             }
         })
         adapter.notifyDataSetChanged()
-        bottledCheckbox.isChecked = brew.isBottled
-        bottledCheckbox.isEnabled = !brew.isBottled
-        bottledCheckbox.setOnCheckedChangeListener { _, isChecked ->
+        binding.bottledCheckbox.isChecked = brew.isBottled
+        binding.bottledCheckbox.isEnabled = !brew.isBottled
+        binding.bottledCheckbox.setOnCheckedChangeListener { _, isChecked ->
             brew.isBottled = isChecked
             brew.bottledDate = DateTime.now().withTimeAtStartOfDay().millis
             firestoreRepository.addBrew(brew)
             updateDrinkableDate()
-            bottledCheckbox.isEnabled = !isChecked
+            binding.bottledCheckbox.isEnabled = !isChecked
             brew.drinkable = DateTime.now().plusDays(14).millis
             firestoreRepository.addAlarm(
                 Alarm(
@@ -69,25 +74,25 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
                 ).also { brew.drinkableAlarmId = it.id })
             firestoreRepository.addBrew(brew)
         }
-        dryHopLabel.visibility = if (brew.dryhops.isNullOrEmpty()) GONE else VISIBLE
+        binding.dryHopLabel.visibility = if (brew.dryhops.isNullOrEmpty()) GONE else VISIBLE
         updateDrinkableDate()
     }
 
     fun updateDrinkableDate() {
         if (brew.isBottled) {
-            drinkableLabel.visibility = VISIBLE
-            drinkableDate.visibility = VISIBLE
-            bottledDateLabel.visibility = VISIBLE
-            bottledDate.visibility = VISIBLE
-            bottledDate.text =
+            binding.drinkableLabel.visibility = VISIBLE
+            binding.drinkableDate.visibility = VISIBLE
+            binding.bottledDateLabel.visibility = VISIBLE
+            binding.bottledDate.visibility = VISIBLE
+            binding.bottledDate.text =
                 SimpleDateFormat("yyyy-MM-dd").format(DateTime(brew.bottledDate).millis)
-            drinkableDate.text =
+            binding.drinkableDate.text =
                 SimpleDateFormat("yyyy-MM-dd").format(DateTime(brew.bottledDate).plusDays(14).millis)
         } else {
-            drinkableLabel.visibility = GONE
-            drinkableDate.visibility = GONE
-            bottledDateLabel.visibility = GONE
-            bottledDate.visibility = GONE
+            binding.drinkableLabel.visibility = GONE
+            binding.drinkableDate.visibility = GONE
+            binding.bottledDateLabel.visibility = GONE
+            binding.bottledDate.visibility = GONE
         }
     }
 
@@ -99,16 +104,21 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
     }
 }
 
-class DryHoppedItem(val dryHopping: DryHopping, val saveCallback: () -> Unit) : Item() {
-    override fun bind(viewHolder: GroupieViewHolder, position: Int) {
-        viewHolder.itemView.dryhopAmount.text = "Amount: ${dryHopping.amount}g"
-        viewHolder.itemView.dryHopDate.text =
-            SimpleDateFormat("yyyy-MM-dd").format(Date(dryHopping.date))
-        viewHolder.itemView.dryHopType.text = "Hop: ${dryHopping.type}"
-        viewHolder.itemView.isDryhoppedCheckBox.isChecked = dryHopping.checked
-        viewHolder.itemView.isDryhoppedCheckBox.isEnabled = !dryHopping.checked
+class DryHoppedItem(val dryHopping: DryHopping, val saveCallback: () -> Unit) :
+    BindableItem<DryHoppedItemBinding>() {
+    val datePattern = SimpleDateFormat("yyyy-MM-dd")
+    override fun initializeViewBinding(view: View): DryHoppedItemBinding {
+        return DryHoppedItemBinding.bind(view)
+    }
 
-        viewHolder.itemView.isDryhoppedCheckBox.setOnCheckedChangeListener { _, isChecked ->
+    override fun bind(viewBinding: DryHoppedItemBinding, position: Int) {
+        viewBinding.dryhopAmount.text = "Amount: ${dryHopping.amount}g"
+        viewBinding.dryHopDate.text = datePattern.format(Date(dryHopping.date))
+        viewBinding.dryHopType.text = "Hop: ${dryHopping.type}"
+        viewBinding.isDryhoppedCheckBox.isChecked = dryHopping.checked
+        viewBinding.isDryhoppedCheckBox.isEnabled = !dryHopping.checked
+
+        viewBinding.isDryhoppedCheckBox.setOnCheckedChangeListener { _, isChecked ->
             dryHopping.checked = isChecked
             saveCallback()
         }
