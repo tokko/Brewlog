@@ -36,6 +36,7 @@ dependencies {
     implementation "com.github.lisawray.groupie:groupie:$groupie_version"
     implementation "com.github.lisawray.groupie:groupie-viewbinding:$groupie_version"
     implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation "io.grpc:grpc-okhttp:1.32.2"
     implementation 'joda-time:joda-time:2.10.6'
     implementation 'org.kodein.di:kodein-di-generic-jvm:6.3.1'
     implementation 'org.kodein.di:kodein-di-framework-android-x:6.1.0'
