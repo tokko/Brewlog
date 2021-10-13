@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import org.joda.time.DateTime
 import java.util.*
 
@@ -13,22 +14,24 @@ interface IScheduler {
 }
 
 class Scheduler(
-    val context: Context,
-    val alarmManager: AlarmManager,
-    val firebaseRepository: IFirestoreRepository
+    private val context: Context,
+    private val alarmManager: AlarmManager,
+    private val firebaseRepository: IFirestoreRepository
 ) : IScheduler {
     override fun schedule() {
-        firebaseRepository.getAlarms {
-            it.forEach {
-                val intent = Intent(context, AlarmReciever::class.java).apply {
+        firebaseRepository.getAlarms { alarms ->
+            alarms.forEach {
+                val intent = Intent(context, AlarmReceiver::class.java).apply {
                     action = it.id
                     putExtra("alarmId", it.id)
                 }
+                val flags =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_UPDATE_CURRENT
                 val pendingIntent = PendingIntent.getBroadcast(
                     context,
                     0,
                     intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    flags
                 )
                 alarmManager.cancel(pendingIntent)
                 if (!it.checked)

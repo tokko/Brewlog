@@ -39,12 +39,12 @@ class BrewListFragment : Fragment(), KodeinAware {
         setHasOptionsMenu(true)
         binding.brewListRecycler.adapter = adapter
         binding.brewListRecycler.layoutManager = LinearLayoutManager(activity)
-        firestoreRepository.getBrews {
+        firestoreRepository.getBrews { brews ->
             if (activity != null) {
                 adapter.clear()
-                it.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate }
-                    .forEach { adapter.add(Brewitem(it, activity as MainActivity)) }
-                adapter.notifyDataSetChanged()
+                brews.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate }
+                    .forEach { adapter.add(BrewItem(it, activity as MainActivity)) }
+                adapter.notifyItemRangeInserted(0, adapter.groupCount)
             }
         }
 
@@ -67,7 +67,8 @@ fun Brew.hasAction() =
         ).withTimeAtStartOfDay().isBeforeNow
     }
 
-class Brewitem(val brew: Brew, val activity: MainActivity) : BindableItem<BrewItemBinding>() {
+class BrewItem(private val brew: Brew, private val activity: MainActivity) :
+    BindableItem<BrewItemBinding>() {
     override fun getLayout() = R.layout.brew_item
     override fun bind(viewBinding: BrewItemBinding, position: Int) {
         viewBinding.mockText.text = brew.name

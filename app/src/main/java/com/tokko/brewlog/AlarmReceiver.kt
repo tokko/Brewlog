@@ -7,15 +7,16 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import org.kodein.di.direct
 import org.kodein.di.generic.instance
 import java.util.*
 
-class AlarmReciever : BroadcastReceiver() {
+class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        context?.let { context ->
+        context?.let { c ->
             intent?.let { intent ->
-                val kodein = (context.applicationContext as BrewLogApplication).kodein
+                val kodein = (c.applicationContext as BrewLogApplication).kodein
                 val firestoreRepository: IFirestoreRepository = kodein.direct.instance()
                 val alarmId = intent.getStringExtra("alarmId")
                 alarmId?.let {
@@ -29,19 +30,21 @@ class AlarmReciever : BroadcastReceiver() {
                                 NotificationManager.IMPORTANCE_DEFAULT
                             )
                         )
-                        val contentIntent = Intent(context, MainActivity::class.java).apply {
+                        val contentIntent = Intent(c, MainActivity::class.java).apply {
                             putExtra(
                                 "brewId",
                                 alarm.brewId
                             )
                         }
+                        val flags =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_UPDATE_CURRENT
                         val contentPendingIntent = PendingIntent.getActivity(
-                            context,
+                            c,
                             0,
                             contentIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
+                            flags
                         )
-                        val deleteIntent = Intent(context, DismissReceiver::class.java).apply {
+                        val deleteIntent = Intent(c, DismissReceiver::class.java).apply {
                             action = alarmId
                             putExtra(
                                 "alarmId",
@@ -49,15 +52,15 @@ class AlarmReciever : BroadcastReceiver() {
                             )
                         }
                         val deletePendingIntent = PendingIntent.getBroadcast(
-                            context,
+                            c,
                             0,
                             deleteIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT
+                            flags
                         )
-                        val notification = Notification.Builder(context, "brews")
+                        val notification = Notification.Builder(c, "brews")
                             .setContentTitle(alarm.headline)
                             .setContentText(alarm.message)
-                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                            .setSmallIcon(R.drawable.ic_launcher_background)
                             .setAutoCancel(false)
                             .setContentIntent(contentPendingIntent)
                             .setDeleteIntent(deletePendingIntent)

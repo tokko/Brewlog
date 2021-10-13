@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:padding="12dp"
     android:layout_height="match_parent">
@@ -9,13 +10,16 @@
         android:layout_height="match_parent">
 
         <EditText
+            android:hint="Brew name"
+            android:importantForAutofill="no"
             android:id="@+id/brewName"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="6dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:hint="Brew name" />
+            android:inputType="text"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/brewDateLabel"
@@ -25,7 +29,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/brewName"
-            android:text="Brew date: " />
+            android:text="Brew date: "
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/brewDate"
@@ -36,7 +41,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/brewName"
             android:layout_toEndOf="@id/brewDateLabel"
-            android:text="brew date placeholder" />
+            android:text="brew date placeholder"
+            tools:ignore="HardcodedText" />
 
         <View
             android:layout_width="match_parent"
@@ -53,7 +59,8 @@
             android:layout_below="@id/brewDate"
             android:textStyle="bold"
             android:layout_alignParentStart="true"
-            android:text="Fermentation end date: " />
+            android:text="Fermentation end date: "
+            tools:ignore="HardcodedText" />
 
         <View
             android:layout_width="match_parent"
@@ -69,7 +76,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/brewDate"
             android:layout_toEndOf="@id/fermentationEndDateLabel"
-            android:text="condition date placeholder" />
+            android:text="condition date placeholder"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/dryHopLabel"
@@ -81,7 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/fermentationEndDateLabel"
             android:layout_alignParentStart="true"
-            android:text="Dry hops:" />
+            android:text="Dry hops:"
+            tools:ignore="HardcodedText" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dryHopRecycler"
@@ -92,35 +101,45 @@
             android:overScrollMode="never" />
 
         <EditText
+            android:hint="Day of Fermentation"
+            android:importantForAutofill="no"
             android:id="@+id/dryHopAddDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/dryHopRecycler"
             android:layout_alignParentStart="true"
-            android:hint="Day of Fermentation" />
+            android:inputType="date"
+            tools:ignore="HardcodedText" />
 
         <EditText
+            android:hint="Hop Type"
+            android:importantForAutofill="no"
             android:id="@+id/dryHopAddHopType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/dryHopRecycler"
             android:layout_toEndOf="@id/dryHopAddDate"
-            android:hint="Hop Type" />
+            android:inputType="text"
+            tools:ignore="HardcodedText" />
 
         <EditText
+            android:hint="Amount (g)"
+            android:importantForAutofill="no"
             android:id="@+id/dryHopAddAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/dryHopRecycler"
             android:layout_toEndOf="@id/dryHopAddHopType"
-            android:hint="Amount (g)" />
+            android:inputType="number"
+            tools:ignore="HardcodedText" />
 
         <Button
             android:id="@+id/dryHopAddButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/dryHopAddAmount"
-            android:text="Add dry hop" />
+            android:text="Add dry hop"
+            tools:ignore="HardcodedText" />
 
         <View
             android:layout_width="match_parent"
@@ -137,6 +156,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/dryHopAddButton"
             android:enabled="false"
-            android:text="Add brew" />
+            android:text="Add brew"
+            tools:ignore="HardcodedText" />
     </RelativeLayout>
 </androidx.core.widget.NestedScrollView>

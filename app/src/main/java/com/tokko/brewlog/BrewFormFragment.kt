@@ -1,5 +1,6 @@
 package com.tokko.brewlog
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Parcelable
 import android.text.Editable
@@ -24,12 +25,12 @@ import java.util.*
 
 class BrewFormFragment : Fragment(), KodeinAware {
     override val kodein by kodein()
-    val firestoreRepository: IFirestoreRepository by instance()
     val brewService: IBrewService by instance()
     lateinit var brew: Brew
     val dryHopAdapter = GroupAdapter<GroupieViewHolder>()
     private var _binding: BrewFormFragmentBinding? = null
     val binding get() = _binding!!
+    val yearDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,9 +55,8 @@ class BrewFormFragment : Fragment(), KodeinAware {
 
     fun initViews() {
         binding.brewName.setText(brew.name)
-        binding.brewDate.text = SimpleDateFormat("yyyy-MM-dd").format(Date(brew.brewDate))
-        binding.fermentationEndDate.text =
-            SimpleDateFormat("yyyy-MM-dd").format(Date(brew.fermentationTime))
+        binding.brewDate.text = yearDateFormat.format(Date(brew.brewDate))
+        binding.fermentationEndDate.text = yearDateFormat.format(Date(brew.fermentationTime))
         val textWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 validateDryHopButton()
@@ -93,7 +93,7 @@ class BrewFormFragment : Fragment(), KodeinAware {
             binding.dryHopAddAmount.text.clear()
             binding.dryHopAddDate.text.clear()
             binding.dryHopAddHopType.text.clear()
-            dryHopAdapter.notifyDataSetChanged()
+            dryHopAdapter.notifyItemInserted(dryHopAdapter.groupCount - 1)
         }
         binding.addBrewButton.setOnClickListener {
             brew.apply {
@@ -117,8 +117,10 @@ class BrewFormFragment : Fragment(), KodeinAware {
 }
 
 class DryHopItem(val dryHopping: DryHopping) : BindableItem<DryHopItemBinding>() {
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
     override fun getLayout() = R.layout.dry_hop_item
+
+    @SuppressLint("SetTextI18n")
     override fun bind(viewBinding: DryHopItemBinding, position: Int) {
         viewBinding.dryhopAmount.text = "Amount: ${dryHopping.amount}g"
         viewBinding.dryHopDate.text =

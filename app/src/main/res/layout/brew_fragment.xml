@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:padding="12dp"
     android:layout_height="match_parent">
@@ -10,7 +11,7 @@
 
         <TextView
             android:id="@+id/brewName"
-            android:textSize="18dp"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +25,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/brewName"
-            android:text="Brew date: " />
+            android:text="Brew date: "
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/brewDate"
@@ -34,7 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/brewName"
             android:layout_toEndOf="@id/brewDateLabel"
-            android:text="brew date placeholder" />
+            android:text="brew date placeholder"
+            tools:ignore="HardcodedText" />
 
         <View
             android:layout_width="match_parent"
@@ -51,7 +54,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/brewDate"
             android:layout_alignParentStart="true"
-            android:text="Fermentation end date: " />
+            android:text="Fermentation end date: "
+            tools:ignore="HardcodedText" />
 
         <View
             android:layout_width="match_parent"
@@ -67,7 +71,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/brewDate"
             android:layout_toEndOf="@id/fermentationEndDateLabel"
-            android:text="condition date placeholder" />
+            android:text="condition date placeholder"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/dryHopLabel"
@@ -78,7 +83,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/fermentationEndDateLabel"
             android:layout_alignParentStart="true"
-            android:text="Dry hops:" />
+            android:text="Dry hops:"
+            tools:ignore="HardcodedText" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/dryHopRecycler"
@@ -97,7 +103,8 @@
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
             android:layout_alignParentStart="true"
-            android:text="Bottled" />
+            android:text="Bottled"
+            tools:ignore="HardcodedText" />
 
         <CheckBox
             android:id="@+id/bottledCheckbox"
@@ -118,7 +125,8 @@
             android:paddingBottom="6dp"
             android:text="Bottled: "
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/bottledDate"
@@ -140,7 +148,8 @@
             android:layout_below="@id/bottledDateLabel"
             android:layout_alignParentStart="true"
             android:text="Drinkable: "
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/drinkableDate"

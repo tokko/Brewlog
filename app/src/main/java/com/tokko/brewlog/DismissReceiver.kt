@@ -8,9 +8,9 @@ import org.kodein.di.generic.instance
 
 class DismissReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        context?.let { context ->
+        context?.let { c ->
             intent?.let { intent ->
-                val kodein = (context.applicationContext as BrewLogApplication).kodein
+                val kodein = (c.applicationContext as BrewLogApplication).kodein
                 val firestoreRepository: IFirestoreRepository = kodein.direct.instance()
                 val alarmId = intent.getStringExtra("alarmId") ?: ""
                 firestoreRepository.getAlarm(alarmId) {

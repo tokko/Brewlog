@@ -15,10 +15,10 @@ import org.kodein.di.generic.provider
 import org.kodein.di.generic.singleton
 
 class BrewLogApplication : Application(), KodeinAware {
-    val scheduler: IScheduler by instance()
-    val brewService: IBrewService by instance()
+    private val scheduler: IScheduler by instance()
+    private val brewService: IBrewService by instance()
     var bootreciever: Bootreciever? = null
-    var alarmReciever: AlarmReciever? = null
+    var alarmReceiver: AlarmReceiver? = null
     var dismissReceiver: DismissReceiver? = null
     override fun onCreate() {
         super.onCreate()
@@ -27,9 +27,9 @@ class BrewLogApplication : Application(), KodeinAware {
             bootreciever = Bootreciever()
             registerReceiver(bootreciever, IntentFilter(Intent.ACTION_BOOT_COMPLETED))
         }
-        if (alarmReciever == null) {
-            alarmReciever = AlarmReciever()
-            registerReceiver(alarmReciever, IntentFilter())
+        if (alarmReceiver == null) {
+            alarmReceiver = AlarmReceiver()
+            registerReceiver(alarmReceiver, IntentFilter())
         }
         if (dismissReceiver == null) {
             dismissReceiver = DismissReceiver()

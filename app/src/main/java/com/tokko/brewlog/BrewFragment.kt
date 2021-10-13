@@ -1,5 +1,6 @@
 package com.tokko.brewlog
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +18,12 @@ import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
+class BrewFragment(private val firestoreRepository: IFirestoreRepository) : Fragment() {
     lateinit var brew: Brew
-    val adapter = GroupAdapter<GroupieViewHolder>()
+    private val adapter = GroupAdapter<GroupieViewHolder>()
     private var _binding: BrewFragmentBinding? = null
     private val binding get() = _binding!!
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,8 +33,6 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
         _binding = BrewFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-    //= inflater.inflate(R.layout.brew_fragment, null)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,9 +45,8 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
 
     private fun initViews() {
         binding.brewName.text = brew.name
-        binding.brewDate.text = SimpleDateFormat("yyyy-MM-dd").format(Date(brew.brewDate))
-        binding.fermentationEndDate.text =
-            SimpleDateFormat("yyyy-MM-dd").format(Date(brew.fermentationTime))
+        binding.brewDate.text = dateFormat.format(Date(brew.brewDate))
+        binding.fermentationEndDate.text = dateFormat.format(Date(brew.fermentationTime))
         binding.dryHopRecycler.adapter = adapter
         binding.dryHopRecycler.layoutManager = LinearLayoutManager(activity)
         adapter.addAll(brew.dryhops.map {
@@ -55,7 +54,7 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
                 firestoreRepository.addBrew(brew)
             }
         })
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemRangeChanged(0, adapter.groupCount)
         binding.bottledCheckbox.isChecked = brew.isBottled
         binding.bottledCheckbox.isEnabled = !brew.isBottled
         binding.bottledCheckbox.setOnCheckedChangeListener { _, isChecked ->
@@ -84,10 +83,9 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
             binding.drinkableDate.visibility = VISIBLE
             binding.bottledDateLabel.visibility = VISIBLE
             binding.bottledDate.visibility = VISIBLE
-            binding.bottledDate.text =
-                SimpleDateFormat("yyyy-MM-dd").format(DateTime(brew.bottledDate).millis)
+            binding.bottledDate.text = dateFormat.format(DateTime(brew.bottledDate).millis)
             binding.drinkableDate.text =
-                SimpleDateFormat("yyyy-MM-dd").format(DateTime(brew.bottledDate).plusDays(14).millis)
+                dateFormat.format(DateTime(brew.bottledDate).plusDays(14).millis)
         } else {
             binding.drinkableLabel.visibility = GONE
             binding.drinkableDate.visibility = GONE
@@ -106,11 +104,12 @@ class BrewFragment(val firestoreRepository: IFirestoreRepository) : Fragment() {
 
 class DryHoppedItem(val dryHopping: DryHopping, val saveCallback: () -> Unit) :
     BindableItem<DryHoppedItemBinding>() {
-    val datePattern = SimpleDateFormat("yyyy-MM-dd")
+    val datePattern = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
     override fun initializeViewBinding(view: View): DryHoppedItemBinding {
         return DryHoppedItemBinding.bind(view)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun bind(viewBinding: DryHoppedItemBinding, position: Int) {
         viewBinding.dryhopAmount.text = "Amount: ${dryHopping.amount}g"
         viewBinding.dryHopDate.text = datePattern.format(Date(dryHopping.date))

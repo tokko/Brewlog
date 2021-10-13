@@ -12,6 +12,7 @@ class Bootreciever : BroadcastReceiver() {
     lateinit var scheduler: IScheduler
 
     override fun onReceive(context: Context?, intent: Intent?) {
+    if (intent?.action != Intent.ACTION_BOOT_COMPLETED) return
         context?.let {
             kodein = (it.applicationContext as BrewLogApplication).kodein
             scheduler = kodein.direct.instance()
