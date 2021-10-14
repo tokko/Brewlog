@@ -17,10 +17,10 @@ class AlarmReceiver : BroadcastReceiver() {
         context?.let { c ->
             intent?.let { intent ->
                 val kodein = (c.applicationContext as BrewLogApplication).kodein
-                val firestoreRepository: IFirestoreRepository = kodein.direct.instance()
+                val fireStoreRepository: IFirestoreRepository = kodein.direct.instance()
                 val alarmId = intent.getStringExtra("alarmId")
                 alarmId?.let {
-                    firestoreRepository.getAlarm(it) { alarm ->
+                    fireStoreRepository.getAlarm(it) { alarm ->
                         if (!alarm.validate()) return@getAlarm
                         val notificationManager: NotificationManager = kodein.direct.instance()
                         notificationManager.createNotificationChannel(

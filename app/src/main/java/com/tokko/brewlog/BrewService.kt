@@ -7,11 +7,14 @@ interface IBrewService {
     fun createBrew(brew: Brew)
 }
 
-class BrewService(override val kodein: Kodein, val firestoreRepository: IFirestoreRepository) :
+class BrewService(
+    override val kodein: Kodein,
+    private val fireStoreRepository: IFirestoreRepository
+) :
     IBrewService, KodeinAware {
     override fun createBrew(brew: Brew) {
         brew.dryhops.forEach { dryHopping ->
-            firestoreRepository.addAlarm(
+            fireStoreRepository.addAlarm(
                 Alarm(
                     brew.id,
                     dryHopping.date,
@@ -22,7 +25,7 @@ class BrewService(override val kodein: Kodein, val firestoreRepository: IFiresto
                 }
             )
         }
-        firestoreRepository.addAlarm(
+        fireStoreRepository.addAlarm(
             Alarm(
                 brew.id,
                 brew.fermentationTime,
@@ -30,6 +33,6 @@ class BrewService(override val kodein: Kodein, val firestoreRepository: IFiresto
                 "Bottle ${brew.name}"
             ).also { brew.bottledAlarmId = it.id }
         )
-        firestoreRepository.addBrew(brew)
+        fireStoreRepository.addBrew(brew)
     }
 }

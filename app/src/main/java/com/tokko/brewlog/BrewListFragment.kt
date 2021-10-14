@@ -17,10 +17,10 @@ import org.kodein.di.generic.instance
 
 class BrewListFragment : Fragment(), KodeinAware {
     private val adapter = GroupAdapter<GroupieViewHolder>()
-    val firestoreRepository: IFirestoreRepository by instance()
+    private val fireStoreRepository: IFirestoreRepository by instance()
 
     private var _binding: BrewListFragmentBinding? = null
-    val binding get() = _binding!!
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +39,7 @@ class BrewListFragment : Fragment(), KodeinAware {
         setHasOptionsMenu(true)
         binding.brewListRecycler.adapter = adapter
         binding.brewListRecycler.layoutManager = LinearLayoutManager(activity)
-        firestoreRepository.getBrews { brews ->
+        fireStoreRepository.getBrews { brews ->
             if (activity != null) {
                 adapter.clear()
                 brews.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate }

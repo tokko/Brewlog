@@ -18,7 +18,7 @@ import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BrewFragment(private val firestoreRepository: IFirestoreRepository) : Fragment() {
+class BrewFragment(private val fireStoreRepository: IFirestoreRepository) : Fragment() {
     lateinit var brew: Brew
     private val adapter = GroupAdapter<GroupieViewHolder>()
     private var _binding: BrewFragmentBinding? = null
@@ -37,7 +37,7 @@ class BrewFragment(private val firestoreRepository: IFirestoreRepository) : Frag
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val brewId = (savedInstanceState ?: arguments)?.getString("brewId") ?: ""
-        firestoreRepository.getBrew(brewId) {
+        fireStoreRepository.getBrew(brewId) {
             brew = it
             initViews()
         }
@@ -51,7 +51,7 @@ class BrewFragment(private val firestoreRepository: IFirestoreRepository) : Frag
         binding.dryHopRecycler.layoutManager = LinearLayoutManager(activity)
         adapter.addAll(brew.dryhops.map {
             DryHoppedItem(it) {
-                firestoreRepository.addBrew(brew)
+                fireStoreRepository.addBrew(brew)
             }
         })
         adapter.notifyItemRangeChanged(0, adapter.groupCount)
@@ -60,18 +60,18 @@ class BrewFragment(private val firestoreRepository: IFirestoreRepository) : Frag
         binding.bottledCheckbox.setOnCheckedChangeListener { _, isChecked ->
             brew.isBottled = isChecked
             brew.bottledDate = DateTime.now().withTimeAtStartOfDay().millis
-            firestoreRepository.addBrew(brew)
+            fireStoreRepository.addBrew(brew)
             updateDrinkableDate()
             binding.bottledCheckbox.isEnabled = !isChecked
             brew.drinkable = DateTime.now().plusDays(14).millis
-            firestoreRepository.addAlarm(
+            fireStoreRepository.addAlarm(
                 Alarm(
                     brew.id,
                     DateTime.now().plusDays(14).millis,
                     "Drinkable brew!",
                     "${brew.name} is now drinkable!"
                 ).also { brew.drinkableAlarmId = it.id })
-            firestoreRepository.addBrew(brew)
+            fireStoreRepository.addBrew(brew)
         }
         binding.dryHopLabel.visibility = if (brew.dryhops.isNullOrEmpty()) GONE else VISIBLE
         updateDrinkableDate()
