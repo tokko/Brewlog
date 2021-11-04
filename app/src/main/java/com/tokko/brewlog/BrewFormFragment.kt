@@ -8,6 +8,23 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
+import androidx.compose.material.Divider
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tokko.brewlog.databinding.BrewFormFragmentBinding
@@ -32,19 +49,121 @@ class BrewFormFragment : Fragment(), KodeinAware {
     val binding get() = _binding!!
     val yearDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
 
+    private val brewState = mutableStateOf(Brew())
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = BrewFormFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+        return ComposeView(requireContext()).apply {
+            setContent {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(4.dp)
+                ) {
+                    TextField(
+                        placeholder = { Text("Amarillo IPA") },
+                        value = brewState.value.name,
+                        onValueChange = {
+                            brewState.value.name = it
+                        },
+                        label = { Text("Brew name") }
+                    )
+                    DateWithLabel(label = "Brew date:", date = brewState.value.brewDate)
+                    DateWithLabel(
+                        label = "Fermentation end date:",
+                        date = brewState.value.fermentationTime
+                    )
+                    Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    val dryhopState = remember { mutableStateListOf<DryHopping>() }
+                    DryhopList(list = dryhopState)
+                    Spacer(modifier = Modifier.height(2.dp))
+                    DryhopInput(state = dryhopState)
+                }
+
+            }
+        }
     }
 
+    @Composable
+    private fun DryhopList(list: SnapshotStateList<DryHopping>) {
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(list) { dryHop ->
+                Text(text = dryHop.type)
+
+            }
+        }
+    }
+
+    @Composable
+    private fun DryhopInput(state: SnapshotStateList<DryHopping>) {
+        val dateState = remember { mutableStateOf("") }
+        val typeState = remember { mutableStateOf("") }
+        val amountState = remember { mutableStateOf("") }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                TextField(
+                    value = dateState.value,
+                    onValueChange = { dateState.value = it },
+                    label = { Text("Day of fermentation") },
+                    modifier = Modifier.weight(1f)
+                )
+                TextField(
+                    value = typeState.value,
+                    onValueChange = { typeState.value = it },
+                    label = { Text("Hop type") },
+                    modifier = Modifier.weight(1f)
+                )
+                TextField(
+                    value = amountState.value,
+                    onValueChange = { amountState.value = it },
+                    label = { Text("Amoung (g)") },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Button(
+                onClick = {
+                    state.add(
+                        DryHopping(
+                            DateTime.now().withTimeAtStartOfDay()
+                                .plusDays(dateState.value.toInt()).millis,
+                            typeState.value,
+                            amountState.value.toInt()
+                        )
+                    )
+                    dateState.value = ""
+                    typeState.value = ""
+                    amountState.value = ""
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = dateState.value.isNotBlank() && typeState.value.isNotBlank() && amountState.value.isNotBlank()
+            ) {
+                Text("Add dryhop")
+            }
+        }
+
+    }
+
+    @Composable
+    private fun DateWithLabel(label: String, date: Long) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Text(text = label, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(
+                    text = yearDateFormat.format(date),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            }
+            Divider(modifier = Modifier.height(2.dp))
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        return
         binding.dryHopRecycler.adapter = dryHopAdapter
         binding.dryHopRecycler.layoutManager = LinearLayoutManager(activity)
         brew = (savedInstanceState ?: arguments)?.getParcelable<Brew>("brew") ?: Brew()
