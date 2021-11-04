@@ -1,34 +1,66 @@
 package com.tokko.brewlog
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Divider
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.tokko.brewlog.databinding.BrewItemBinding
-import com.tokko.brewlog.databinding.BrewListFragmentBinding
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.GroupieViewHolder
-import com.xwray.groupie.viewbinding.BindableItem
 import org.joda.time.DateTime
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.kodein
 import org.kodein.di.generic.instance
 
 class BrewListFragment : Fragment(), KodeinAware {
-    private val adapter = GroupAdapter<GroupieViewHolder>()
+    override val kodein by kodein()
     private val fireStoreRepository: IFirestoreRepository by instance()
-
-    private var _binding: BrewListFragmentBinding? = null
-    private val binding get() = _binding!!
+    private val brewListState = mutableStateListOf<Brew>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = BrewListFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+        return ComposeView(requireContext()).apply {
+            setContent {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(brewListState) { brew ->
+                        BrewCard(brew)
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun BrewCard(brew: Brew) {
+        Column(modifier = Modifier
+            .clickable {
+                (activity as MainActivity).showBrewFragment(brew.id)
+            }
+            .fillMaxWidth()
+            .padding(8.dp)) {
+            Text(
+                brew.name, modifier = Modifier.fillMaxWidth(), fontSize = 24.sp, color = when {
+                    brew.hasAction() -> Color(-65536)
+                    DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow -> Color(-16711936)
+                    else -> Color(-16777216)
+                }
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Divider(modifier = Modifier.height(1.dp))
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) =
@@ -37,27 +69,17 @@ class BrewListFragment : Fragment(), KodeinAware {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        binding.brewListRecycler.adapter = adapter
-        binding.brewListRecycler.layoutManager = LinearLayoutManager(activity)
         fireStoreRepository.getBrews { brews ->
             if (activity != null) {
-                adapter.clear()
-                brews.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate }
-                    .forEach { adapter.add(BrewItem(it, activity as MainActivity)) }
-                adapter.notifyItemRangeInserted(0, adapter.groupCount)
+                brewListState.addAll(brews.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate })
             }
         }
-
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         (activity as MainActivity).showAddBrewFragment()
         return true
     }
-
-    override val kodein by kodein()
-
 }
 
 fun Brew.hasAction() =
@@ -66,25 +88,3 @@ fun Brew.hasAction() =
             it.date
         ).withTimeAtStartOfDay().isBeforeNow
     }
-
-class BrewItem(private val brew: Brew, private val activity: MainActivity) :
-    BindableItem<BrewItemBinding>() {
-    override fun getLayout() = R.layout.brew_item
-    override fun bind(viewBinding: BrewItemBinding, position: Int) {
-        viewBinding.mockText.text = brew.name
-        viewBinding.mockText.setTextColor(
-            when {
-                brew.hasAction() -> Color.RED
-                DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow -> Color.GREEN
-                else -> Color.BLACK
-            }
-        )
-        viewBinding.root.setOnClickListener {
-            activity.showBrewFragment(brew.id)
-        }
-
-    }
-
-    override fun initializeViewBinding(view: View) = BrewItemBinding.bind(view)
-
-}
