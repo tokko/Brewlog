@@ -63,17 +63,18 @@ class BrewFormFragment : Fragment(), KodeinAware {
                         .fillMaxSize()
                         .padding(4.dp)
                 ) {
+                    val s = remember { mutableStateOf("") }
                     TextField(
-                        placeholder = { Text("Amarillo IPA") },
-                        value = brewState.value.name,
+                        value = s.value,
                         onValueChange = {
-                            brewState.value.name = it
+                            s.value = it
                         },
-                        label = { Text("Brew name") }
+                        label = { Text("Brew name") },
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    DateWithLabel(label = "Brew date:", date = brewState.value.brewDate)
+                    DateWithLabel(label = "Brew date: ", date = brewState.value.brewDate)
                     DateWithLabel(
-                        label = "Fermentation end date:",
+                        label = "Fermentation end date: ",
                         date = brewState.value.fermentationTime
                     )
                     Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
@@ -81,6 +82,18 @@ class BrewFormFragment : Fragment(), KodeinAware {
                     DryhopList(list = dryhopState)
                     Spacer(modifier = Modifier.height(2.dp))
                     DryhopInput(state = dryhopState)
+                    Button(
+                        onClick = {
+                            brewState.value.name = s.value
+                            brewState.value.dryhops = dryhopState
+                            brewService.createBrew(brewState.value)
+                            (activity as MainActivity).showBrewListFragment()
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = s.value.isNotBlank()
+                    ) {
+                        Text(text = "Add brew")
+                    }
                 }
 
             }
@@ -108,21 +121,22 @@ class BrewFormFragment : Fragment(), KodeinAware {
                     value = dateState.value,
                     onValueChange = { dateState.value = it },
                     label = { Text("Day of fermentation") },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(2f)
                 )
                 TextField(
                     value = typeState.value,
                     onValueChange = { typeState.value = it },
-                    label = { Text("Hop type") },
+                    label = { Text("Hop") },
                     modifier = Modifier.weight(1f)
                 )
                 TextField(
                     value = amountState.value,
                     onValueChange = { amountState.value = it },
-                    label = { Text("Amoung (g)") },
+                    label = { Text("Gram") },
                     modifier = Modifier.weight(1f)
                 )
             }
+            Spacer(Modifier.height(2.dp))
             Button(
                 onClick = {
                     state.add(
@@ -142,6 +156,7 @@ class BrewFormFragment : Fragment(), KodeinAware {
             ) {
                 Text("Add dryhop")
             }
+            Spacer(Modifier.height(2.dp))
         }
 
     }
