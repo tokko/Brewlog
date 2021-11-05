@@ -86,7 +86,6 @@ class BrewFragment : Fragment(), KodeinAware {
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(modifier = Modifier.fillMaxWidth()) {
                         Text(text = "Bottled", modifier = Modifier.weight(1f))
-                        val state = remember { mutableStateOf(brewState.value.isBottled) }
                         Checkbox(
                             checked = brewState.value.isBottled,
                             onCheckedChange = {
