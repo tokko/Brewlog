@@ -88,9 +88,8 @@ class BrewFragment : Fragment(), KodeinAware {
                         Text(text = "Bottled", modifier = Modifier.weight(1f))
                         val state = remember { mutableStateOf(brewState.value.isBottled) }
                         Checkbox(
-                            checked = state.value,
+                            checked = brewState.value.isBottled,
                             onCheckedChange = {
-                                state.value = it
                                 brewState.value.isBottled = it
                                 brewState.value.bottledDate =
                                     DateTime.now().withTimeAtStartOfDay().millis
