@@ -33,8 +33,8 @@ import java.util.*
 
 class BrewFormFragment : Fragment(), KodeinAware {
     override val kodein by kodein()
-    val brewService: IBrewService by instance()
-    val yearDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
+    private val brewService: IBrewService by instance()
+    private val yearDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
 
     private val brewState = mutableStateOf(Brew())
 
