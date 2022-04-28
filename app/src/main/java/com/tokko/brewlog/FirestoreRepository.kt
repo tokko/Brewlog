@@ -14,7 +14,7 @@ interface IFirestoreRepository {
 }
 
 class FirestoreRepository : IFirestoreRepository {
-    var db = FirebaseFirestore.getInstance().collection("root").document("brewer")
+    var db = FirebaseFirestore.getInstance().collection("stage").document("brewer")
 
     override fun addBrew(brew: Brew) {
         db.collection("brews")

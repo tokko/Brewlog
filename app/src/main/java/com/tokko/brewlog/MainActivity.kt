@@ -32,14 +32,20 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         else
             showBrewListFragment()
          */
+        if (brewId != null)
+            brewViewModel.getBrew(brewId = brewId)
         setContent {
             val navController = rememberNavController()
             BrewLogTheme {
-                NavHost(navController = navController, startDestination = "brewList") {
+                NavHost(
+                    navController = navController,
+                    startDestination = if (brewId == null) "brew" else "brewList"
+                ) {
                     composable(route = "brew") {
                         Scaffold(
                             topBar = {
-                                TopAppBar(title = { Text(text = "Brew") },
+                                TopAppBar(
+                                    title = { Text(text = "Brew") },
                                     navigationIcon = {
                                         IconButton(onClick = { navController.navigateUp() }) {
                                             Icon(
