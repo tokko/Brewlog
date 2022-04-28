@@ -45,47 +45,50 @@ class BrewFormFragment : Fragment(), KodeinAware {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(4.dp)
-                ) {
-                    val s = remember { mutableStateOf("") }
-                    TextField(
-                        value = s.value,
-                        onValueChange = {
-                            s.value = it
-                        },
-                        label = { Text("Brew name") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    DateWithLabel(label = "Brew date: ", date = brewState.value.brewDate)
-                    DateWithLabel(
-                        label = "Fermentation end date: ",
-                        date = brewState.value.fermentationTime
-                    )
-                    Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    val dryhopState = remember { mutableStateListOf<DryHopping>() }
-                    DryhopList(list = dryhopState)
-                    Spacer(modifier = Modifier.height(2.dp))
-                    DryhopInput(state = dryhopState)
-                    Button(
-                        onClick = {
-                            brewState.value.name = s.value
-                            brewState.value.dryhops = dryhopState
-                            brewService.createBrew(brewState.value)
-                            (activity as MainActivity).showBrewListFragment()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = s.value.isNotBlank()
+                BrewLogTheme {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(4.dp)
                     ) {
-                        Text(text = "Add brew")
+                        val s = remember { mutableStateOf("") }
+                        TextField(
+                            value = s.value,
+                            onValueChange = {
+                                s.value = it
+                            },
+                            label = { Text("Brew name") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        DateWithLabel(label = "Brew date: ", date = brewState.value.brewDate)
+                        DateWithLabel(
+                            label = "Fermentation end date: ",
+                            date = brewState.value.fermentationTime
+                        )
+                        Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        val dryhopState = remember { mutableStateListOf<DryHopping>() }
+                        DryhopList(list = dryhopState)
+                        Spacer(modifier = Modifier.height(2.dp))
+                        DryhopInput(state = dryhopState)
+                        Button(
+                            onClick = {
+                                brewState.value.name = s.value
+                                brewState.value.dryhops = dryhopState
+                                brewService.createBrew(brewState.value)
+                                (activity as MainActivity).showBrewListFragment()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = s.value.isNotBlank()
+                        ) {
+                            Text(text = "Add brew")
+                        }
                     }
-                }
 
+                }
             }
         }
     }
+
 
     @Composable
     private fun DryhopList(list: SnapshotStateList<DryHopping>) {
