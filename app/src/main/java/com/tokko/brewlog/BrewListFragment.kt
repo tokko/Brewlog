@@ -53,8 +53,7 @@ class BrewListFragment : Fragment(), KodeinAware {
             .clickable {
                 (activity as MainActivity).showBrewFragment(brew.id)
             }
-            .fillMaxWidth()
-            .padding(all = 8.dp)) {
+            .fillMaxWidth()) {
             Text(
                 brew.name,
                 modifier = Modifier
