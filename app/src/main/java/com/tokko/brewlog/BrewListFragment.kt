@@ -33,9 +33,11 @@ class BrewListFragment : Fragment(), KodeinAware {
     ): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(brewListState) { brew ->
-                        BrewCard(brew)
+                BrewLogTheme {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(brewListState) { brew ->
+                            BrewCard(brew)
+                        }
                     }
                 }
             }
