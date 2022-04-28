@@ -95,4 +95,5 @@ val appModule = module {
     single<IBrewService> { BrewService(get()) }
 
     viewModel { BrewListViewModel(get()) }
+    viewModel { BrewViewModel(get()) }
 }

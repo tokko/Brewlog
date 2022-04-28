@@ -74,7 +74,7 @@ class BrewFormFragment : Fragment(), KoinComponent {
                                 brewState.value.name = s.value
                                 brewState.value.dryhops = dryhopState
                                 brewService.createBrew(brewState.value)
-                                (activity as MainActivity).showBrewListFragment()
+                         //       (activity as MainActivity).showBrewListFragment()
                             },
                             modifier = Modifier.fillMaxWidth(),
                             enabled = s.value.isNotBlank()

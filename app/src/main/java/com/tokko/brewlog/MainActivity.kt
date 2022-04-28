@@ -7,18 +7,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class MainActivity : AppCompatActivity(), KoinComponent {
-    var brewList = true
-    val brewListViewModel: BrewListViewModel by inject()
+    private val brewListViewModel: BrewListViewModel by inject()
+    private val brewViewModel: BrewViewModel by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
@@ -35,11 +34,23 @@ class MainActivity : AppCompatActivity(), KoinComponent {
             val navController = rememberNavController()
             BrewLogTheme {
                 NavHost(navController = navController, startDestination = "brewList") {
-                    composable(route = "brew/{brewId}",
-                        arguments = listOf(navArgument("brewId") { type = NavType.StringType })
-                    ) {
-                        val brewId = it.arguments?.getString("brewId") ?: ""
-                        Text(text = "Brew id: $brewId")
+                    composable(route = "brew") {
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(title = { Text(text = "Brew") },
+                                    navigationIcon = {
+                                        IconButton(onClick = { navController.navigateUp() }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.ArrowBack,
+                                                contentDescription = "navigate up"
+                                            )
+                                        }
+                                    })
+                            },
+                            content = {
+                                BrewScreen(brewViewModel = brewViewModel)
+                            }
+                        )
                     }
                     composable(route = "brewList") {
                         Scaffold(
@@ -59,7 +70,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             }
                         ) {
                             BrewListScreen(brewListViewModel = brewListViewModel, onBrewClick = {
-                                navController.navigate("brew/$it")
+                                brewViewModel.getBrew(it)
+                                navController.navigate("brew")
                             })
                         }
                     }
@@ -67,44 +79,4 @@ class MainActivity : AppCompatActivity(), KoinComponent {
             }
         }
     }
-
-    /*
-        override fun onSupportNavigateUp(): Boolean {
-            showBrewListFragment()
-            return true
-        }
-    */
-    override fun onBackPressed() {
-        if (!brewList)
-            showBrewListFragment()
-        else
-            super.onBackPressed()
-    }
-
-    fun showBrewFragment(id: String) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        brewList = false
-        supportFragmentManager.beginTransaction()
-            .replace(android.R.id.content, BrewFragment.newInstance(id))
-            .commit()
-    }
-
-    fun showBrewListFragment() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        brewList = true
-        //  supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
-        //    .commit()
-
-    }
-
-    fun showAddBrewFragment() {
-        brewList = false
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewFormFragment())
-            .commit()
-    }
-
 }
