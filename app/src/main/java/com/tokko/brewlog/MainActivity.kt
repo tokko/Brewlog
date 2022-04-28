@@ -18,6 +18,8 @@ import org.koin.core.component.inject
 class MainActivity : AppCompatActivity(), KoinComponent {
     private val brewListViewModel: BrewListViewModel by inject()
     private val brewViewModel: BrewViewModel by inject()
+    private val brewFormViewModel: BrewFormViewModel by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
@@ -52,6 +54,24 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             }
                         )
                     }
+                    composable(route = "brewForm") {
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(title = { Text(text = "Add brew") },
+                                    navigationIcon = {
+                                        IconButton(onClick = { navController.navigateUp() }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.ArrowBack,
+                                                contentDescription = "navigate up"
+                                            )
+                                        }
+                                    })
+                            },
+                            content = {
+                                BrewFormScreen(brewFormViewModel = brewFormViewModel)
+                            }
+                        )
+                    }
                     composable(route = "brewList") {
                         Scaffold(
                             modifier = Modifier.fillMaxSize(),
@@ -59,7 +79,10 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                                 TopAppBar(
                                     title = { Text(text = "Brewlog") },
                                     actions = {
-                                        IconButton(onClick = { /*TODO*/ }) {
+                                        IconButton(onClick = {
+                                            brewFormViewModel.brewState.value =
+                                                Brew(); navController.navigate("brewForm")
+                                        }) {
                                             Icon(
                                                 imageVector = Icons.Filled.Add,
                                                 contentDescription = "Add brew"

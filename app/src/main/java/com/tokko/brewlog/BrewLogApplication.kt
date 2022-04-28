@@ -96,4 +96,5 @@ val appModule = module {
 
     viewModel { BrewListViewModel(get()) }
     viewModel { BrewViewModel(get()) }
+    viewModel { BrewFormViewModel(get()) }
 }
