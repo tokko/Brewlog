@@ -1,58 +1,111 @@
 package com.tokko.brewlog
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.kodein
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class MainActivity : AppCompatActivity(), KodeinAware {
-    override val kodein by kodein(this)
-    var brewList = true
+class MainActivity : AppCompatActivity(), KoinComponent {
+    private val brewListViewModel: BrewListViewModel by inject()
+    private val brewViewModel: BrewViewModel by inject()
+    private val brewFormViewModel: BrewFormViewModel by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        actionBar?.hide()
+        supportActionBar?.hide()
+        brewListViewModel.observeBrews()
         val brewId = intent.getStringExtra("brewId")
+        /*
         if (brewId != null)
             showBrewFragment(brewId)
         else
             showBrewListFragment()
+         */
+        setContent {
+            val navController = rememberNavController()
+            BrewLogTheme {
+                NavHost(navController = navController, startDestination = "brewList") {
+                    composable(route = "brew") {
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(title = { Text(text = "Brew") },
+                                    navigationIcon = {
+                                        IconButton(onClick = { navController.navigateUp() }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.ArrowBack,
+                                                contentDescription = "navigate up"
+                                            )
+                                        }
+                                    })
+                            },
+                            content = {
+                                BrewScreen(brewViewModel = brewViewModel)
+                            }
+                        )
+                    }
+                    composable(route = "brewForm") {
+                        Scaffold(
+                            topBar = {
+                                TopAppBar(title = { Text(text = "Add brew") },
+                                    navigationIcon = {
+                                        IconButton(onClick = { navController.navigateUp() }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.ArrowBack,
+                                                contentDescription = "navigate up"
+                                            )
+                                        }
+                                    })
+                            },
+                            content = {
+                                BrewFormScreen(brewFormViewModel = brewFormViewModel) {
+                                    navController.navigate("brewList") {
+                                        popUpTo(route = "brewList") {
+                                            inclusive = false
+                                        }
+                                    }
+                                }
+                            }
+                        )
+                    }
+                    composable(route = "brewList") {
+                        Scaffold(
+                            modifier = Modifier.fillMaxSize(),
+                            topBar = {
+                                TopAppBar(
+                                    title = { Text(text = "Brewlog") },
+                                    actions = {
+                                        IconButton(onClick = {
+                                            brewFormViewModel.brewState.value =
+                                                Brew(); navController.navigate("brewForm")
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Add,
+                                                contentDescription = "Add brew"
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        ) {
+                            BrewListScreen(brewListViewModel = brewListViewModel, onBrewClick = {
+                                brewViewModel.getBrew(it)
+                                navController.navigate("brew")
+                            })
+                        }
+                    }
+                }
+            }
+        }
     }
-
-    override fun onSupportNavigateUp(): Boolean {
-        showBrewListFragment()
-        return true
-    }
-
-    override fun onBackPressed() {
-        if (!brewList)
-            showBrewListFragment()
-        else
-            super.onBackPressed()
-    }
-
-    fun showBrewFragment(id: String) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        brewList = false
-        supportFragmentManager.beginTransaction()
-            .replace(android.R.id.content, BrewFragment.newInstance(id))
-            .commit()
-    }
-
-    fun showBrewListFragment() {
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-        brewList = true
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
-            .commit()
-
-    }
-
-    fun showAddBrewFragment() {
-        brewList = false
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewFormFragment())
-            .commit()
-    }
-
 }

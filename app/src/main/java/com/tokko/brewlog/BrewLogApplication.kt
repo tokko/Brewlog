@@ -7,21 +7,27 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import org.joda.time.DateTime
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
-import org.kodein.di.generic.bind
-import org.kodein.di.generic.instance
-import org.kodein.di.generic.provider
-import org.kodein.di.generic.singleton
+import org.koin.android.ext.koin.androidApplication
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.context.GlobalContext.startKoin
+import org.koin.dsl.module
 
-class BrewLogApplication : Application(), KodeinAware {
-    private val scheduler: IScheduler by instance()
-    private val brewService: IBrewService by instance()
+class BrewLogApplication : Application(), KoinComponent {
+    private val scheduler: IScheduler by inject()
+    private val brewService: IBrewService by inject()
     var bootreciever: Bootreciever? = null
     var alarmReceiver: AlarmReceiver? = null
     var dismissReceiver: DismissReceiver? = null
     override fun onCreate() {
         super.onCreate()
+        startKoin {
+            //  androidLogger()
+            androidContext(this@BrewLogApplication)
+            modules(appModule)
+        }
         scheduler.schedule()
         if (bootreciever == null) {
             bootreciever = Bootreciever()
@@ -36,6 +42,8 @@ class BrewLogApplication : Application(), KodeinAware {
             registerReceiver(dismissReceiver, IntentFilter())
         }
         //   bootStrap()
+
+
     }
 
     private fun bootStrap() {
@@ -59,7 +67,6 @@ class BrewLogApplication : Application(), KodeinAware {
             "",
             null,
             "41f214e8-0e0d-4f18-bfc0-e9e0bdaba331"
-
         )
         brewService.createBrew(brew)
         val brew2 = Brew(
@@ -77,14 +84,17 @@ class BrewLogApplication : Application(), KodeinAware {
         )
         brewService.createBrew(brew2)
     }
-    override val kodein = Kodein.lazy {
-        bind<IFirestoreRepository>() with singleton { FirestoreRepository() }
-        bind<IScheduler>() with singleton { Scheduler(instance(), instance(), instance()) }
-        bind<AlarmManager>() with provider { this@BrewLogApplication.getSystemService(Context.ALARM_SERVICE) as AlarmManager }
-        bind<NotificationManager>() with provider { this@BrewLogApplication.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
-        bind<Context>() with singleton { this@BrewLogApplication }
-        bind<IBrewService>() with singleton { BrewService(instance(), instance()) }
-        bind<Kodein>() with singleton { kodein }
-    }
+}
 
+val appModule = module {
+    single<IFirestoreRepository> { FirestoreRepository() }
+    single<IScheduler> { Scheduler(get(), get(), get()) }
+    factory { androidApplication().getSystemService(Context.ALARM_SERVICE) as AlarmManager }
+    factory { androidApplication().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
+    single<Context> { androidApplication().applicationContext }
+    single<IBrewService> { BrewService(get()) }
+
+    viewModel { BrewListViewModel(get()) }
+    viewModel { BrewViewModel(get()) }
+    viewModel { BrewFormViewModel(get()) }
 }

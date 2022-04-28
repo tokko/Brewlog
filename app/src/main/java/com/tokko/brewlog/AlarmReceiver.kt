@@ -8,21 +8,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import org.kodein.di.direct
-import org.kodein.di.generic.instance
 import java.util.*
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         context?.let { c ->
             intent?.let { intent ->
-                val kodein = (c.applicationContext as BrewLogApplication).kodein
-                val fireStoreRepository: IFirestoreRepository = kodein.direct.instance()
+                val koin = (c.applicationContext as BrewLogApplication).getKoin()
+                val fireStoreRepository: IFirestoreRepository = koin.get()
                 val alarmId = intent.getStringExtra("alarmId")
                 alarmId?.let {
                     fireStoreRepository.getAlarm(it) { alarm ->
                         if (!alarm.validate()) return@getAlarm
-                        val notificationManager: NotificationManager = kodein.direct.instance()
+                        val notificationManager: NotificationManager = koin.get()
                         notificationManager.createNotificationChannel(
                             NotificationChannel(
                                 "brews",
