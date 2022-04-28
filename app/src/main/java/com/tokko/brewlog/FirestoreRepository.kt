@@ -36,8 +36,12 @@ class FirestoreRepository : IFirestoreRepository {
     }
 
     override fun getBrew(id: String, callback: (Brew) -> Unit) {
-        db.collection("brews").document(id).get().addOnCompleteListener {
-            callback(it.result?.toObject(Brew::class.java) ?: Brew())
+        try {
+            db.collection("brews").document(id).get().addOnCompleteListener {
+                callback(it.result?.toObject(Brew::class.java) ?: Brew())
+            }
+        } catch (t: Throwable) {
+            t.printStackTrace()
         }
     }
 
