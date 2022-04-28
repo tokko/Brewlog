@@ -46,6 +46,9 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             topBar = {
                                 TopAppBar(
                                     title = { Text(text = "Brew") },
+                                    /*      actions = { IconButton(onClick = { brewFormViewModel.brewState.value = brewViewModel.brewState.value; navController.navigate("brewForm") }) {
+                                             Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit")
+                                          }},*/
                                     navigationIcon = {
                                         IconButton(onClick = { navController.navigateUp() }) {
                                             Icon(
