@@ -81,7 +81,7 @@ class BrewFormFragment : Fragment(), KodeinAware {
                             modifier = Modifier.fillMaxWidth(),
                             enabled = s.value.isNotBlank()
                         ) {
-                            Text(text = "Add brew")
+                            Text(modifier = Modifier.padding(all = 16.dp), text = "Add brew")
                         }
                     }
 
@@ -145,7 +145,7 @@ class BrewFormFragment : Fragment(), KodeinAware {
                 modifier = Modifier.fillMaxWidth(),
                 enabled = dateState.value.isNotBlank() && typeState.value.isNotBlank() && amountState.value.isNotBlank()
             ) {
-                Text("Add dryhop")
+                Text(modifier = Modifier.padding(all = 16.dp), text = "Add dryhop")
             }
             Spacer(Modifier.height(2.dp))
         }
