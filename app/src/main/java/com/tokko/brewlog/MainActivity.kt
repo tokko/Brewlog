@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
             BrewLogTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = if (brewId == null) "brew" else "brewList"
+                    startDestination = if (brewId != null) "brew" else "brewList"
                 ) {
                     composable(route = "brew") {
                         Scaffold(

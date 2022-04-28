@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -63,7 +64,7 @@ fun BrewCard(brew: Brew, onClick: (String) -> Unit) {
             color = when {
                 brew.hasAction() -> Color(-65536)
                 DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow -> Color(-16711936)
-                else -> Color(-16777216)
+                else -> MaterialTheme.colors.onBackground
             }
         )
         Divider()
