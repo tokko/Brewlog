@@ -30,7 +30,8 @@ class BrewListViewModel(private val fireStoreRepository: IFirestoreRepository) :
 
     fun observeBrews() {
         fireStoreRepository.getBrews { brews ->
-            brewListState.addAll(brews.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate })
+            brewListState.apply { clear() }
+                .addAll(brews.sortedByDescending { if (it.hasAction()) Long.MAX_VALUE else it.brewDate })
         }
     }
 }

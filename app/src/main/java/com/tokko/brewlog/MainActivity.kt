@@ -68,7 +68,13 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                                     })
                             },
                             content = {
-                                BrewFormScreen(brewFormViewModel = brewFormViewModel)
+                                BrewFormScreen(brewFormViewModel = brewFormViewModel) {
+                                    navController.navigate("brewList") {
+                                        popUpTo(route = "brewList") {
+                                            inclusive = false
+                                        }
+                                    }
+                                }
                             }
                         )
                     }

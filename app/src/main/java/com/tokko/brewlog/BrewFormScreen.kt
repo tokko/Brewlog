@@ -29,7 +29,7 @@ class BrewFormViewModel(val brewService: IBrewService) : ViewModel() {
 }
 
 @Composable
-fun BrewFormScreen(brewFormViewModel: BrewFormViewModel) {
+fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
@@ -65,7 +65,7 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel) {
                 brewFormViewModel.brewState.value.name = s.value
                 brewFormViewModel.brewState.value.dryhops = dryhopState
                 brewFormViewModel.brewService.createBrew(brewFormViewModel.brewState.value)
-                //       (activity as MainActivity).showBrewListFragment()
+                onAddBrew()
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = s.value.isNotBlank()
