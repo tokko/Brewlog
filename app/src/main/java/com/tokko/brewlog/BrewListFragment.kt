@@ -3,7 +3,10 @@ package com.tokko.brewlog
 import android.os.Bundle
 import android.view.*
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
@@ -51,16 +54,20 @@ class BrewListFragment : Fragment(), KodeinAware {
                 (activity as MainActivity).showBrewFragment(brew.id)
             }
             .fillMaxWidth()
-            .padding(8.dp)) {
+            .padding(all = 8.dp)) {
             Text(
-                brew.name, modifier = Modifier.fillMaxWidth(), fontSize = 24.sp, color = when {
+                brew.name,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(all = 16.dp),
+                fontSize = 24.sp,
+                color = when {
                     brew.hasAction() -> Color(-65536)
                     DateTime(brew.drinkable).withTimeAtStartOfDay().isBeforeNow -> Color(-16711936)
                     else -> Color(-16777216)
                 }
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Divider(modifier = Modifier.height(1.dp))
+            Divider()
         }
 
     }
