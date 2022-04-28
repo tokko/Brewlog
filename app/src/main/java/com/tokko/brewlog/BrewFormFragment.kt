@@ -47,9 +47,10 @@ class BrewFormFragment : Fragment(), KodeinAware {
             setContent {
                 BrewLogTheme {
                     Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(4.dp)
+                            .padding(16.dp)
                     ) {
                         val s = remember { mutableStateOf("") }
                         TextField(
