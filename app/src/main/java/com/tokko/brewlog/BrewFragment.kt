@@ -42,10 +42,11 @@ class BrewFragment : Fragment(), KodeinAware {
             setContent {
                 BrewLogTheme {
                     Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
                             .fillMaxSize()
                             .background(color = MaterialTheme.colors.background)
-                            .padding(4.dp)
+                            .padding(16.dp)
                     ) {
                         Text(
                             text = brewState.value.name,
