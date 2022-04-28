@@ -1,17 +1,15 @@
 package com.tokko.brewlog
 
-import org.kodein.di.Kodein
-import org.kodein.di.KodeinAware
+
 
 interface IBrewService {
     fun createBrew(brew: Brew)
 }
 
 class BrewService(
-    override val kodein: Kodein,
     private val fireStoreRepository: IFirestoreRepository
 ) :
-    IBrewService, KodeinAware {
+    IBrewService {
     override fun createBrew(brew: Brew) {
         brew.dryhops.forEach { dryHopping ->
             fireStoreRepository.addAlarm(

@@ -25,15 +25,13 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import kotlinx.parcelize.Parcelize
 import org.joda.time.DateTime
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.kodein
-import org.kodein.di.generic.instance
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BrewFormFragment : Fragment(), KodeinAware {
-    override val kodein by kodein()
-    private val brewService: IBrewService by instance()
+class BrewFormFragment : Fragment(), KoinComponent {
+    private val brewService: IBrewService by inject()
     private val yearDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
 
     private val brewState = mutableStateOf(Brew())

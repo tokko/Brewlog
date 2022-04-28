@@ -22,15 +22,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import org.joda.time.DateTime
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.x.kodein
-import org.kodein.di.generic.instance
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class BrewFragment : Fragment(), KodeinAware {
-    override val kodein by kodein()
-    private val fireStoreRepository: IFirestoreRepository by instance()
+class BrewFragment : Fragment(), KoinComponent {
+    private val fireStoreRepository: IFirestoreRepository by inject()
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("sv-SE"))
     private val brewState = mutableStateOf(Brew())
     override fun onCreateView(

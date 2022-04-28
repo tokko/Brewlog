@@ -1,27 +1,66 @@
 package com.tokko.brewlog
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import org.kodein.di.KodeinAware
-import org.kodein.di.android.kodein
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import org.koin.core.component.KoinComponent
 
-class MainActivity : AppCompatActivity(), KodeinAware {
-    override val kodein by kodein(this)
+class MainActivity : AppCompatActivity(), KoinComponent {
     var brewList = true
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        actionBar?.hide()
+        supportActionBar?.hide()
         val brewId = intent.getStringExtra("brewId")
+        /*
         if (brewId != null)
             showBrewFragment(brewId)
         else
             showBrewListFragment()
+         */
+        setContent {
+            val navController = rememberNavController()
+            BrewLogTheme {
+                NavHost(navController = navController, startDestination = "brewList") {
+                    composable(route = "brewList") {
+                        Scaffold(
+                            modifier = Modifier.fillMaxSize(),
+                            topBar = {
+                                TopAppBar(
+                                    title = { Text(text = "Brewlog") },
+                                    actions = {
+                                        IconButton(onClick = { /*TODO*/ }) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Add,
+                                                contentDescription = "Add brew"
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        ) {
+                            Text(text = "Placeholder")
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        showBrewListFragment()
-        return true
-    }
-
+    /*
+        override fun onSupportNavigateUp(): Boolean {
+            showBrewListFragment()
+            return true
+        }
+    */
     override fun onBackPressed() {
         if (!brewList)
             showBrewListFragment()
@@ -42,8 +81,8 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
         brewList = true
-        supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
-            .commit()
+        //  supportFragmentManager.beginTransaction().replace(android.R.id.content, BrewListFragment())
+        //    .commit()
 
     }
 
