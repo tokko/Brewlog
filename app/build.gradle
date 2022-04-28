@@ -21,9 +21,16 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    flavorDimensions "api"
+    productFlavors{
+        root{
+            dimension "api"
+            buildConfigField "String", "FIREBASE_ROOT", "\"root\""
+        }
         stage{
-            minifyEnabled false
-
+            dimension "api"
+            buildConfigField "String", "FIREBASE_ROOT", "\"stage\""
         }
     }
     compileOptions {
