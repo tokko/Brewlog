@@ -8,17 +8,22 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class MainActivity : AppCompatActivity(), KoinComponent {
     var brewList = true
+    val brewListViewModel: BrewListViewModel by inject()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actionBar?.hide()
         supportActionBar?.hide()
+        brewListViewModel.observeBrews()
         val brewId = intent.getStringExtra("brewId")
         /*
         if (brewId != null)
@@ -30,6 +35,12 @@ class MainActivity : AppCompatActivity(), KoinComponent {
             val navController = rememberNavController()
             BrewLogTheme {
                 NavHost(navController = navController, startDestination = "brewList") {
+                    composable(route = "brew/{brewId}",
+                        arguments = listOf(navArgument("brewId") { type = NavType.StringType })
+                    ) {
+                        val brewId = it.arguments?.getString("brewId") ?: ""
+                        Text(text = "Brew id: $brewId")
+                    }
                     composable(route = "brewList") {
                         Scaffold(
                             modifier = Modifier.fillMaxSize(),
@@ -47,7 +58,9 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                                 )
                             }
                         ) {
-                            Text(text = "Placeholder")
+                            BrewListScreen(brewListViewModel = brewListViewModel, onBrewClick = {
+                                navController.navigate("brew/$it")
+                            })
                         }
                     }
                 }
