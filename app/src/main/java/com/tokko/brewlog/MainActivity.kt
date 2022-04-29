@@ -26,12 +26,6 @@ class MainActivity : AppCompatActivity(), KoinComponent {
         supportActionBar?.hide()
         brewListViewModel.observeBrews()
         val brewId = intent.getStringExtra("brewId")
-        /*
-        if (brewId != null)
-            showBrewFragment(brewId)
-        else
-            showBrewListFragment()
-         */
         if (brewId != null)
             brewViewModel.getBrew(brewId = brewId)
         setContent {
