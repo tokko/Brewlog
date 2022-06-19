@@ -67,7 +67,6 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
             fontSize = 18.sp,
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(4.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Brew date: ",
@@ -75,9 +74,7 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
             )
             Text(text = brewViewModel.dateFormat.format(brewViewModel.brewState.value.brewDate))
         }
-        Spacer(modifier = Modifier.height(4.dp))
         Divider()
-        Spacer(modifier = Modifier.height(4.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Fermentation end date: ",
@@ -85,23 +82,18 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
             )
             Text(text = brewViewModel.dateFormat.format(brewViewModel.brewState.value.fermentationTime))
         }
-        Spacer(modifier = Modifier.height(4.dp))
         Divider()
-        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "Dry hops:",
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
         )
-        Spacer(modifier = Modifier.height(4.dp))
         LazyColumn {
             items(brewViewModel.brewState.value.dryhops) { dryHop ->
                 DryHop(brewViewModel, dryHop)
             }
         }
-        Spacer(modifier = Modifier.height(4.dp))
         Divider()
-        Spacer(modifier = Modifier.height(4.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(text = "Bottled", modifier = Modifier.weight(1f))
             Checkbox(
@@ -124,7 +116,6 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
                 Text(text = brewViewModel.dateFormat.format(it))
             }
         }
-        Spacer(modifier = Modifier.height(4.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "Drinkable: ",
