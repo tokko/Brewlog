@@ -5,7 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -98,18 +101,26 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
             }
         }
         Divider()
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .clickable(role = Role.Button) {
+                brewViewModel.brewState.value.isBottled = brewViewModel.brewState.value.isBottled
+                brewViewModel.brewState.value.bottledDate =
+                    DateTime
+                        .now()
+                        .withTimeAtStartOfDay().millis
+                brewViewModel.brewState.value.drinkable =
+                    DateTime
+                        .now()
+                        .withTimeAtStartOfDay()
+                        .plusDays(14).millis
+                brewViewModel.addBrew(brewViewModel.brewState.value)
+            }) {
             Text(text = "Bottled", modifier = Modifier.weight(1f))
-            Checkbox(
+            Switch(
                 checked = brewViewModel.brewState.value.isBottled,
-                onCheckedChange = {
-                    brewViewModel.brewState.value.isBottled = it
-                    brewViewModel.brewState.value.bottledDate =
-                        DateTime.now().withTimeAtStartOfDay().millis
-                    brewViewModel.brewState.value.drinkable =
-                        DateTime.now().withTimeAtStartOfDay().plusDays(14).millis
-                    brewViewModel.addBrew(brewViewModel.brewState.value)
-                })
+                onCheckedChange = null
+            )
         }
         brewViewModel.brewState.value.bottledDate?.let {
             Row(modifier = Modifier.fillMaxWidth()) {
