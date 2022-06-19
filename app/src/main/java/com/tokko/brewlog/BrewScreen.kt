@@ -1,17 +1,17 @@
 package com.tokko.brewlog
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Checkbox
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,17 +38,21 @@ class BrewViewModel(private val fireStoreRepository: IFirestoreRepository) : Vie
 
 @Composable
 private fun DryHop(brewViewModel: BrewViewModel, dryHop: DryHopping) {
-
-    Row(modifier = Modifier.fillMaxWidth()) {
+    val state = remember { mutableStateOf(dryHop.checked) }
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .clickable(role = Role.Checkbox) {
+            dryHop.checked = dryHop.checked
+            state.value = dryHop.checked
+            brewViewModel.addBrew(brewViewModel.brewState.value)
+        }) {
         Text(text = brewViewModel.dateFormat.format(dryHop.date), modifier = Modifier.weight(1f))
         Text(text = "Hop: ${dryHop.type}", modifier = Modifier.weight(1f))
         Text(text = "Amount: ${dryHop.amount}g", modifier = Modifier.weight(1f))
-        val state = remember { mutableStateOf(dryHop.checked) }
-        Checkbox(checked = state.value, onCheckedChange = {
-            dryHop.checked = it
-            state.value = it
-            brewViewModel.addBrew(brewViewModel.brewState.value)
-        })
+        Switch(
+            modifier = Modifier.align(alignment = Alignment.CenterVertically),
+            checked = state.value, onCheckedChange = null
+        )
     }
 }
 
