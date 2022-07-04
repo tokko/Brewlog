@@ -62,7 +62,8 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
         Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         val dryhopState = remember { mutableStateListOf<DryHopping>() }
         DryhopList(list = dryhopState)
-        Spacer(modifier = Modifier.height(2.dp))
+        if(dryhopState.isNotEmpty())
+            Spacer(modifier = Modifier.height(2.dp))
         DryhopInput(state = dryhopState)
         Button(
             onClick = {
