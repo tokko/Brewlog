@@ -256,6 +256,7 @@ private fun DryhopInput(
                 label = { Text("Grams") },
             )
         }
+        /*
         Spacer(Modifier.height(2.dp))
         Button(
             onClick = {
@@ -267,6 +268,7 @@ private fun DryhopInput(
             Text(text = "Add dryhop")
         }
         Spacer(Modifier.height(2.dp))
+         */
     }
 
 }
