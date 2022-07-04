@@ -82,11 +82,17 @@ fun BrewFormScreen(
             value = instructionsState.value,
             onValueChange = { instructionsState.value = it }
         )
-        Button(modifier = Modifier.fillMaxWidth(), onClick = onWortBoilDesign) {
+        val dryhopState = remember { mutableStateListOf<DryHopping>() }
+        Button(modifier = Modifier.fillMaxWidth(), onClick = {
+            brewFormViewModel.brewState.value.name = nameState.value
+            brewFormViewModel.brewState.value.dryhops = dryhopState
+            brewFormViewModel.brewState.value.instructions = instructionsState.value
+
+            onWortBoilDesign()
+        }) {
             Text(text = "Design wort boil")
         }
         Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        val dryhopState = remember { mutableStateListOf<DryHopping>() }
         DryhopList(list = dryhopState)
         if (dryhopState.isNotEmpty())
             Spacer(modifier = Modifier.height(2.dp))
