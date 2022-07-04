@@ -41,7 +41,9 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                 ) {
                     composable(route = "brew") {
                         NavigateUpComposable(title = "Brew", navController = navController) {
-                            BrewScreen(brewViewModel = brewViewModel)
+                            BrewScreen(brewViewModel = brewViewModel, onWortBoil = {
+                                navController.navigate("wortBoilViewer")
+                            })
                         }
                     }
                     composable(route = "wortBoilDesigner") {
@@ -52,13 +54,18 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             WortBoilDesigner(brewFormViewModel = brewFormViewModel)
                         }
                     }
+                    composable(route = "wortBoilViewer") {
+                        NavigateUpComposable(title = "Wort boil", navController = navController) {
+                            WortBoilViewer(brewViewModel = brewViewModel)
+                        }
+                    }
                     composable(route = "brewForm") {
                         NavigateUpComposable(title = "Add brew", navController = navController) {
                             BrewFormScreen(
                                 brewFormViewModel = brewFormViewModel,
                                 onWortBoilDesign = { navController.navigate("wortBoilDesigner") }) {
                                 navController.navigateUp()
-                                }
+                            }
                         }
                     }
                     composable(route = "brewList") {

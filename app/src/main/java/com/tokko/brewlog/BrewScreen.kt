@@ -5,10 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,7 +57,14 @@ private fun DryHop(brewViewModel: BrewViewModel, dryHop: DryHopping) {
 }
 
 @Composable
-fun BrewScreen(brewViewModel: BrewViewModel) {
+fun WortBoilViewer(brewViewModel: BrewViewModel) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text("Wort boild viewer")
+    }
+}
+
+@Composable
+fun BrewScreen(brewViewModel: BrewViewModel, onWortBoil: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
@@ -149,6 +153,10 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
                 fontWeight = FontWeight.Bold,
             )
             Text(text = brewViewModel.dateFormat.format(brewViewModel.brewState.value.drinkable))
+        }
+
+        Button(modifier = Modifier.fillMaxWidth(), onClick = onWortBoil) {
+            Text(text = "Wort boil")
         }
     }
 }
