@@ -4,10 +4,7 @@ import android.os.Parcelable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Button
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -54,6 +51,13 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             brewFormViewModel = brewFormViewModel,
             label = "Fermentation end date: ",
             date = brewFormViewModel.brewState.value.fermentationTime
+        )
+
+        OutlinedTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = { Text(text = "Instructions")},
+            value = brewFormViewModel.brewState.value.instructions,
+            onValueChange = { brewFormViewModel.brewState.value.instructions = it}
         )
         Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         val dryhopState = remember { mutableStateListOf<DryHopping>() }
@@ -171,6 +175,6 @@ class Brew(
     var isBottled: Boolean = false,
     var bottledAlarmId: String = "",
     var bottledDate: Long? = null,
-    var notes: String = "",
+    var instructions: String = "",
     var id: String = UUID.randomUUID().toString()
 ) : Parcelable
