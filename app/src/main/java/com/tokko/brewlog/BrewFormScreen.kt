@@ -105,7 +105,14 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
 private fun DryhopList(list: SnapshotStateList<DryHopping>) {
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(list) { dryHop ->
-            Text(text = dryHop.type)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = dryHop.type, fontWeight = FontWeight.Bold)
+                Text(text = "${dryHop.amount}g")
+                Text(text = SimpleDateFormat("yyyy-MM-dd", Locale("sv")).format(dryHop.date))
+            }
 
         }
     }
