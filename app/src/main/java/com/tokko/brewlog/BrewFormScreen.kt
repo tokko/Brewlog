@@ -19,10 +19,9 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -122,8 +121,19 @@ private fun DryhopInput(
     val typeState = remember { mutableStateOf("") }
     val amountState = remember { mutableStateOf("") }
     val (second, third) = FocusRequester.createRefs()
-    val focusManager = LocalFocusManager.current
-    val keyboardManager = LocalSoftwareKeyboardController.current
+    val onAdd = {
+        state.add(
+            DryHopping(
+                DateTime.now().withTimeAtStartOfDay()
+                    .plusDays(dateState.value.toInt()).millis,
+                typeState.value,
+                amountState.value.toInt()
+            )
+        )
+        dateState.value = ""
+        typeState.value = ""
+        amountState.value = ""
+    }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth()) {
             OutlinedTextField(
@@ -132,7 +142,10 @@ private fun DryhopInput(
                     .focusRequester(focusRequester = first),
                 value = dateState.value,
                 keyboardActions = KeyboardActions(onAny = { second.requestFocus() }),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
                 onValueChange = { dateState.value = it },
                 label = { Text("Day of fermentation") },
             )
@@ -142,35 +155,32 @@ private fun DryhopInput(
                     .focusRequester(focusRequester = second),
                 value = typeState.value,
                 keyboardActions = KeyboardActions(onAny = { third.requestFocus() }),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Next),
                 onValueChange = { typeState.value = it },
                 label = { Text("Hop") },
             )
+
             OutlinedTextField(
                 modifier = Modifier
                     .weight(1f)
                     .focusRequester(focusRequester = third),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus(force = true); keyboardManager?.hide() }),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onAny = {
+                    onAdd()
+                    first.requestFocus()
+                }),
                 value = amountState.value,
                 onValueChange = { amountState.value = it },
-                label = { Text("Gram") },
+                label = { Text("Grams") },
             )
         }
         Spacer(Modifier.height(2.dp))
         Button(
             onClick = {
-                state.add(
-                    DryHopping(
-                        DateTime.now().withTimeAtStartOfDay()
-                            .plusDays(dateState.value.toInt()).millis,
-                        typeState.value,
-                        amountState.value.toInt()
-                    )
-                )
-                dateState.value = ""
-                typeState.value = ""
-                amountState.value = ""
+                onAdd()
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = dateState.value.isNotBlank() && typeState.value.isNotBlank() && amountState.value.isNotBlank()
