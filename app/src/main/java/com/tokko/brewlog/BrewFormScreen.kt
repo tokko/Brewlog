@@ -37,7 +37,11 @@ class BrewFormViewModel(val brewService: IBrewService) : ViewModel() {
 
 @ExperimentalComposeUiApi
 @Composable
-fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) {
+fun BrewFormScreen(
+    brewFormViewModel: BrewFormViewModel,
+    onWortBoilDesign: () -> Unit,
+    onAddBrew: () -> Unit
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
@@ -77,10 +81,13 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             value = instructionState.value,
             onValueChange = { instructionState.value = it }
         )
+        Button(modifier = Modifier.fillMaxWidth(), onClick = onWortBoilDesign) {
+            Text(text = "Design wort boil")
+        }
         Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         val dryhopState = remember { mutableStateListOf<DryHopping>() }
         DryhopList(list = dryhopState)
-        if(dryhopState.isNotEmpty())
+        if (dryhopState.isNotEmpty())
             Spacer(modifier = Modifier.height(2.dp))
         DryhopInput(first = third, state = dryhopState)
         Button(
@@ -99,6 +106,10 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
     }
 }
 
+@Composable
+fun WortBoilDesigner(brewFormViewModel: BrewFormViewModel, onDone: () -> Unit) {
+    Text(text = "Wort boil")
+}
 
 @Composable
 private fun DryhopList(list: SnapshotStateList<DryHopping>) {

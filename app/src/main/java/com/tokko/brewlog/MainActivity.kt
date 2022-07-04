@@ -8,13 +8,17 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
+@ExperimentalComposeUiApi
 class MainActivity : AppCompatActivity(), KoinComponent {
     private val brewListViewModel: BrewListViewModel by inject()
     private val brewViewModel: BrewViewModel by inject()
@@ -36,50 +40,32 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                     startDestination = if (brewId != null) "brew" else "brewList"
                 ) {
                     composable(route = "brew") {
-                        Scaffold(
-                            topBar = {
-                                TopAppBar(
-                                    title = { Text(text = "Brew") },
-                                    /*      actions = { IconButton(onClick = { brewFormViewModel.brewState.value = brewViewModel.brewState.value; navController.navigate("brewForm") }) {
-                                             Icon(imageVector = Icons.Filled.Edit, contentDescription = "edit")
-                                          }},*/
-                                    navigationIcon = {
-                                        IconButton(onClick = { navController.navigateUp() }) {
-                                            Icon(
-                                                imageVector = Icons.Filled.ArrowBack,
-                                                contentDescription = "navigate up"
-                                            )
-                                        }
-                                    })
-                            },
-                            content = {
-                                BrewScreen(brewViewModel = brewViewModel)
+                        NavigateUpComposable(title = "Brew", navController = navController) {
+                            BrewScreen(brewViewModel = brewViewModel)
+                        }
+                    }
+                    composable(route = "wortBoilDesigner") {
+                        NavigateUpComposable(
+                            title = "Wort boil designer",
+                            navController = navController
+                        ) {
+                            WortBoilDesigner(brewFormViewModel = brewFormViewModel) {
+                                navController.navigateUp()
                             }
-                        )
+                        }
                     }
                     composable(route = "brewForm") {
-                        Scaffold(
-                            topBar = {
-                                TopAppBar(title = { Text(text = "Add brew") },
-                                    navigationIcon = {
-                                        IconButton(onClick = { navController.navigateUp() }) {
-                                            Icon(
-                                                imageVector = Icons.Filled.ArrowBack,
-                                                contentDescription = "navigate up"
-                                            )
-                                        }
-                                    })
-                            },
-                            content = {
-                                BrewFormScreen(brewFormViewModel = brewFormViewModel) {
-                                    navController.navigate("brewList") {
-                                        popUpTo(route = "brewList") {
-                                            inclusive = false
-                                        }
+                        NavigateUpComposable(title = "Add brew", navController = navController) {
+                            BrewFormScreen(
+                                brewFormViewModel = brewFormViewModel,
+                                onWortBoilDesign = { navController.navigate("wortBoilDesigner") }) {
+                                navController.navigate("brewList") {
+                                    popUpTo(route = "brewList") {
+                                        inclusive = false
                                     }
                                 }
                             }
-                        )
+                        }
                     }
                     composable(route = "brewList") {
                         Scaffold(
@@ -111,4 +97,28 @@ class MainActivity : AppCompatActivity(), KoinComponent {
             }
         }
     }
+}
+
+@Composable
+fun NavigateUpComposable(
+    title: String,
+    navController: NavController,
+    content: @Composable () -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(text = title) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "navigate up"
+                        )
+                    }
+                })
+        },
+        content = {
+            content()
+        }
+    )
 }
