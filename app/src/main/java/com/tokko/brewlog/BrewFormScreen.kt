@@ -42,24 +42,25 @@ fun BrewFormScreen(
     onWortBoilDesign: () -> Unit,
     onAddBrew: () -> Unit
 ) {
+    val (first, second, third) = FocusRequester.createRefs()
+    val nameState = remember { mutableStateOf(brewFormViewModel.brewState.value.name) }
+    val instructionsState =
+        remember { mutableStateOf(brewFormViewModel.brewState.value.instructions) }
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        val (first, second, third) = FocusRequester.createRefs()
-        val s = remember { mutableStateOf("") }
-        val instructionState = remember { mutableStateOf("") }
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester = first),
             keyboardActions = KeyboardActions(onAny = { second.requestFocus() }),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            value = s.value,
+            value = nameState.value,
             onValueChange = {
-                s.value = it
+                nameState.value = it
             },
             label = { Text("Brew name") },
         )
@@ -78,8 +79,8 @@ fun BrewFormScreen(
                 .fillMaxWidth()
                 .focusRequester(focusRequester = second),
             label = { Text(text = "Instructions") },
-            value = instructionState.value,
-            onValueChange = { instructionState.value = it }
+            value = instructionsState.value,
+            onValueChange = { instructionsState.value = it }
         )
         Button(modifier = Modifier.fillMaxWidth(), onClick = onWortBoilDesign) {
             Text(text = "Design wort boil")
@@ -92,31 +93,32 @@ fun BrewFormScreen(
         DryhopInput(first = third, state = dryhopState)
         Button(
             onClick = {
-                brewFormViewModel.brewState.value.name = s.value
+                brewFormViewModel.brewState.value.name = nameState.value
                 brewFormViewModel.brewState.value.dryhops = dryhopState
-                brewFormViewModel.brewState.value.instructions = instructionState.value
+                brewFormViewModel.brewState.value.instructions = instructionsState.value
                 brewFormViewModel.brewService.createBrew(brewFormViewModel.brewState.value)
                 onAddBrew()
+                brewFormViewModel.brewState.value = Brew()
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = s.value.isNotBlank()
+            enabled = brewFormViewModel.brewState.value.name.isNotBlank()
         ) {
             Text(text = "Add brew")
         }
     }
 }
 
-data class WortAction(val minutes: Int, val action: String, val isOffset: Boolean = true)
 
 @ExperimentalComposeUiApi
 @Composable
-fun WortBoilDesigner(brewFormViewModel: BrewFormViewModel, onDone: () -> Unit) {
-    val list = remember { mutableStateListOf<WortAction>() }
+fun WortBoilDesigner(brewFormViewModel: BrewFormViewModel) {
     val (first, second) = FocusRequester.createRefs()
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(all = 16.dp)) {
-        list.forEach {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 16.dp)
+    ) {
+        brewFormViewModel.brewState.value.wortBoil.forEach {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -132,7 +134,7 @@ fun WortBoilDesigner(brewFormViewModel: BrewFormViewModel, onDone: () -> Unit) {
             val minutesState = remember { mutableStateOf("") }
             val actionState = remember { mutableStateOf("") }
             val onAdd = {
-                list.add(
+                brewFormViewModel.brewState.value.wortBoil.add(
                     WortAction(
                         isOffset = minutesState.value.contains("+"),
                         minutes = minutesState.value.replace("+", "").toInt(),
@@ -277,6 +279,7 @@ private fun DateWithLabel(brewFormViewModel: BrewFormViewModel, label: String, d
         Divider(modifier = Modifier.height(2.dp))
     }
 }
+
 @Parcelize
 data class DryHopping(
     var date: Long = 0,
@@ -285,6 +288,10 @@ data class DryHopping(
     var checked: Boolean = false,
     var alarmId: String = ""
 ) : Parcelable
+
+@Parcelize
+class WortAction(var minutes: Int = 0, var action: String = "", var isOffset: Boolean = true) :
+    Parcelable
 
 @Parcelize
 class Brew(
@@ -298,5 +305,6 @@ class Brew(
     var bottledAlarmId: String = "",
     var bottledDate: Long? = null,
     var instructions: String = "",
-    var id: String = UUID.randomUUID().toString()
+    var id: String = UUID.randomUUID().toString(),
+    var wortBoil: MutableList<WortAction> = mutableListOf()
 ) : Parcelable

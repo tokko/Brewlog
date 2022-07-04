@@ -49,9 +49,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             title = "Wort boil designer",
                             navController = navController
                         ) {
-                            WortBoilDesigner(brewFormViewModel = brewFormViewModel) {
-                                navController.navigateUp()
-                            }
+                            WortBoilDesigner(brewFormViewModel = brewFormViewModel)
                         }
                     }
                     composable(route = "brewForm") {
@@ -59,12 +57,8 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             BrewFormScreen(
                                 brewFormViewModel = brewFormViewModel,
                                 onWortBoilDesign = { navController.navigate("wortBoilDesigner") }) {
-                                navController.navigate("brewList") {
-                                    popUpTo(route = "brewList") {
-                                        inclusive = false
-                                    }
+                                navController.navigateUp()
                                 }
-                            }
                         }
                     }
                     composable(route = "brewList") {
@@ -75,8 +69,7 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                                     title = { Text(text = "Brewlog") },
                                     actions = {
                                         IconButton(onClick = {
-                                            brewFormViewModel.brewState.value =
-                                                Brew(); navController.navigate("brewForm")
+                                            navController.navigate("brewForm")
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Filled.Add,
