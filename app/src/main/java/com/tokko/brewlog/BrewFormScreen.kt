@@ -73,8 +73,6 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             modifier = Modifier
                 .fillMaxWidth()
                 .focusRequester(focusRequester = second),
-            keyboardActions = KeyboardActions(onAny = { third.requestFocus() }),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             label = { Text(text = "Instructions") },
             value = instructionState.value,
             onValueChange = { instructionState.value = it }
