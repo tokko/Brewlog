@@ -4,14 +4,25 @@ import android.os.Parcelable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.Divider
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -25,6 +36,7 @@ class BrewFormViewModel(val brewService: IBrewService) : ViewModel() {
     val brewState = mutableStateOf(Brew())
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) {
     Column(
@@ -33,14 +45,19 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        val (first, second, third) = FocusRequester.createRefs()
         val s = remember { mutableStateOf("") }
-        TextField(
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester = first),
+            keyboardActions = KeyboardActions(onAny = { second.requestFocus() }),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             value = s.value,
             onValueChange = {
                 s.value = it
             },
             label = { Text("Brew name") },
-            modifier = Modifier.fillMaxWidth()
         )
         DateWithLabel(
             brewFormViewModel = brewFormViewModel,
@@ -54,17 +71,21 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
         )
 
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(text = "Instructions")},
+            modifier = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester = second),
+            keyboardActions = KeyboardActions(onAny = { third.requestFocus() }),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            label = { Text(text = "Instructions") },
             value = brewFormViewModel.brewState.value.instructions,
-            onValueChange = { brewFormViewModel.brewState.value.instructions = it}
+            onValueChange = { brewFormViewModel.brewState.value.instructions = it }
         )
         Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         val dryhopState = remember { mutableStateListOf<DryHopping>() }
         DryhopList(list = dryhopState)
         if(dryhopState.isNotEmpty())
             Spacer(modifier = Modifier.height(2.dp))
-        DryhopInput(state = dryhopState)
+        DryhopInput(first = third, state = dryhopState)
         Button(
             onClick = {
                 brewFormViewModel.brewState.value.name = s.value
@@ -75,7 +96,7 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             modifier = Modifier.fillMaxWidth(),
             enabled = s.value.isNotBlank()
         ) {
-            Text(modifier = Modifier.padding(all = 16.dp), text = "Add brew")
+            Text(text = "Add brew")
         }
     }
 }
@@ -91,30 +112,49 @@ private fun DryhopList(list: SnapshotStateList<DryHopping>) {
     }
 }
 
+@ExperimentalComposeUiApi
 @Composable
-private fun DryhopInput(state: SnapshotStateList<DryHopping>) {
+private fun DryhopInput(
+    first: FocusRequester = FocusRequester(),
+    state: SnapshotStateList<DryHopping>
+) {
     val dateState = remember { mutableStateOf("") }
     val typeState = remember { mutableStateOf("") }
     val amountState = remember { mutableStateOf("") }
+    val (second, third) = FocusRequester.createRefs()
+    val focusManager = LocalFocusManager.current
+    val keyboardManager = LocalSoftwareKeyboardController.current
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            TextField(
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(2f)
+                    .focusRequester(focusRequester = first),
                 value = dateState.value,
+                keyboardActions = KeyboardActions(onAny = { second.requestFocus() }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 onValueChange = { dateState.value = it },
                 label = { Text("Day of fermentation") },
-                modifier = Modifier.weight(2f)
             )
-            TextField(
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester = second),
                 value = typeState.value,
+                keyboardActions = KeyboardActions(onAny = { third.requestFocus() }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 onValueChange = { typeState.value = it },
                 label = { Text("Hop") },
-                modifier = Modifier.weight(1f)
             )
-            TextField(
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester = third),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus(force = true); keyboardManager?.hide() }),
                 value = amountState.value,
                 onValueChange = { amountState.value = it },
                 label = { Text("Gram") },
-                modifier = Modifier.weight(1f)
             )
         }
         Spacer(Modifier.height(2.dp))
@@ -135,7 +175,7 @@ private fun DryhopInput(state: SnapshotStateList<DryHopping>) {
             modifier = Modifier.fillMaxWidth(),
             enabled = dateState.value.isNotBlank() && typeState.value.isNotBlank() && amountState.value.isNotBlank()
         ) {
-            Text(modifier = Modifier.padding(all = 16.dp), text = "Add dryhop")
+            Text(text = "Add dryhop")
         }
         Spacer(Modifier.height(2.dp))
     }
