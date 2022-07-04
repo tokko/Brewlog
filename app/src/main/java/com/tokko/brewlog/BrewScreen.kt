@@ -90,6 +90,16 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
             Text(text = brewViewModel.dateFormat.format(brewViewModel.brewState.value.fermentationTime))
         }
         Divider()
+        if (brewViewModel.brewState.value.instructions.isNotBlank()) {
+            Text(
+                text = "Instructions:",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+            )
+            Text(text = brewViewModel.brewState.value.instructions)
+            Divider()
+        }
+
         Text(
             text = "Dry hops:",
             fontWeight = FontWeight.Bold,
@@ -101,21 +111,23 @@ fun BrewScreen(brewViewModel: BrewViewModel) {
             }
         }
         Divider()
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .clickable(role = Role.Button) {
-                brewViewModel.brewState.value.isBottled = brewViewModel.brewState.value.isBottled
-                brewViewModel.brewState.value.bottledDate =
-                    DateTime
-                        .now()
-                        .withTimeAtStartOfDay().millis
-                brewViewModel.brewState.value.drinkable =
-                    DateTime
-                        .now()
-                        .withTimeAtStartOfDay()
-                        .plusDays(14).millis
-                brewViewModel.addBrew(brewViewModel.brewState.value)
-            }) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(role = Role.Button) {
+                    brewViewModel.brewState.value.isBottled =
+                        brewViewModel.brewState.value.isBottled
+                    brewViewModel.brewState.value.bottledDate =
+                        DateTime
+                            .now()
+                            .withTimeAtStartOfDay().millis
+                    brewViewModel.brewState.value.drinkable =
+                        DateTime
+                            .now()
+                            .withTimeAtStartOfDay()
+                            .plusDays(14).millis
+                    brewViewModel.addBrew(brewViewModel.brewState.value)
+                }) {
             Text(text = "Bottled", modifier = Modifier.weight(1f))
             Switch(
                 checked = brewViewModel.brewState.value.isBottled,

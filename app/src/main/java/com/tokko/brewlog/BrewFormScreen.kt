@@ -46,6 +46,7 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
     ) {
         val (first, second, third) = FocusRequester.createRefs()
         val s = remember { mutableStateOf("") }
+        val instructionState = remember { mutableStateOf("") }
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,7 +69,6 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             label = "Fermentation end date: ",
             date = brewFormViewModel.brewState.value.fermentationTime
         )
-
         OutlinedTextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -76,8 +76,8 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             keyboardActions = KeyboardActions(onAny = { third.requestFocus() }),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             label = { Text(text = "Instructions") },
-            value = brewFormViewModel.brewState.value.instructions,
-            onValueChange = { brewFormViewModel.brewState.value.instructions = it }
+            value = instructionState.value,
+            onValueChange = { instructionState.value = it }
         )
         Text(text = "Dry hops:", fontWeight = FontWeight.Bold, fontSize = 16.sp)
         val dryhopState = remember { mutableStateListOf<DryHopping>() }
@@ -89,6 +89,7 @@ fun BrewFormScreen(brewFormViewModel: BrewFormViewModel, onAddBrew: () -> Unit) 
             onClick = {
                 brewFormViewModel.brewState.value.name = s.value
                 brewFormViewModel.brewState.value.dryhops = dryhopState
+                brewFormViewModel.brewState.value.instructions = instructionState.value
                 brewFormViewModel.brewService.createBrew(brewFormViewModel.brewState.value)
                 onAddBrew()
             },
