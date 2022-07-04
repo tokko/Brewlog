@@ -58,8 +58,22 @@ private fun DryHop(brewViewModel: BrewViewModel, dryHop: DryHopping) {
 
 @Composable
 fun WortBoilViewer(brewViewModel: BrewViewModel) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        Text("Wort boild viewer")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(all = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        brewViewModel.brewState.value.wortBoil.forEach {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(text = it.minutes.toString())
+                Text(text = it.action)
+            }
+            Divider()
+        }
     }
 }
 
