@@ -106,9 +106,63 @@ fun BrewFormScreen(
     }
 }
 
+data class WortAction(val minutes: Int, val action: String, val isOffset: Boolean = true)
+
+@ExperimentalComposeUiApi
 @Composable
 fun WortBoilDesigner(brewFormViewModel: BrewFormViewModel, onDone: () -> Unit) {
-    Text(text = "Wort boil")
+    val list = remember { mutableStateListOf<WortAction>() }
+    val (first, second) = FocusRequester.createRefs()
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(all = 16.dp)) {
+        list.forEach {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(text = it.minutes.toString())
+                Text(text = it.action)
+            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            val minutesState = remember { mutableStateOf("") }
+            val actionState = remember { mutableStateOf("") }
+            val onAdd = {
+                list.add(
+                    WortAction(
+                        isOffset = minutesState.value.contains("+"),
+                        minutes = minutesState.value.replace("+", "").toInt(),
+                        action = actionState.value
+                    )
+                )
+                minutesState.value = ""
+                actionState.value = ""
+            }
+            OutlinedTextField(modifier = Modifier
+                .weight(0.2f)
+                .focusRequester(focusRequester = first),
+                value = minutesState.value,
+                label = { Text(text = "Time") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onAny = { second.requestFocus() }),
+                onValueChange = { minutesState.value = it })
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .focusRequester(focusRequester = second),
+                label = { Text(text = "Action") },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onAny = { onAdd(); first.requestFocus() }),
+                value = actionState.value, onValueChange = { actionState.value = it })
+        }
+    }
 }
 
 @Composable
