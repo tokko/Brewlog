@@ -57,7 +57,7 @@ private fun DryHop(brewViewModel: BrewViewModel, dryHop: DryHopping) {
 }
 
 @Composable
-fun WortBoilViewer(brewViewModel: BrewViewModel) {
+fun WortBoilViewer(brewViewModel: BrewViewModel, onBeginBoil: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,6 +73,12 @@ fun WortBoilViewer(brewViewModel: BrewViewModel) {
                 Text(text = it.action)
             }
             Divider()
+        }
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onBeginBoil
+        ) {
+            Text(text = "Begin boil")
         }
     }
 }

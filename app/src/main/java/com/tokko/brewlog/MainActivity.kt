@@ -54,9 +54,14 @@ class MainActivity : AppCompatActivity(), KoinComponent {
                             WortBoilDesigner(brewFormViewModel = brewFormViewModel)
                         }
                     }
+                    composable(route = "activeBoil") {
+                        Text(text = "active boil")
+                    }
                     composable(route = "wortBoilViewer") {
                         NavigateUpComposable(title = "Wort boil", navController = navController) {
-                            WortBoilViewer(brewViewModel = brewViewModel)
+                            WortBoilViewer(brewViewModel = brewViewModel) {
+                                navController.navigate("activeBoil")
+                            }
                         }
                     }
                     composable(route = "brewForm") {
