@@ -174,9 +174,10 @@ fun BrewScreen(brewViewModel: BrewViewModel, onWortBoil: () -> Unit) {
             )
             Text(text = brewViewModel.dateFormat.format(brewViewModel.brewState.value.drinkable))
         }
-
+/*
         Button(modifier = Modifier.fillMaxWidth(), onClick = onWortBoil) {
             Text(text = "Wort boil")
         }
+ */
     }
 }
